@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。最好的方法建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。   功能和工具 静态资源服务器和域名: github page 静态博客资源: hexo 博客主题: NexT 博客评价: gitalk 博客访问记录: GoogleAnalytics 图床: 七">
+  <meta name="description" content="本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。   功能和工具 静态资源服务器和域名: github page 静态博客资源: hexo 博客主题: NexT 博客评价: gitalk 博客访问记录: GoogleAnalytics, 百度统计 图床:">
 <meta property="og:type" content="article">
 <meta property="og:title" content="博客功能和依赖">
 <meta property="og:url" content="http://yoursite.com/2020/03/07/how-to-create-blog-in-github/">
 <meta property="og:site_name" content="Huan Space">
-<meta property="og:description" content="本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。最好的方法建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。   功能和工具 静态资源服务器和域名: github page 静态博客资源: hexo 博客主题: NexT 博客评价: gitalk 博客访问记录: GoogleAnalytics 图床: 七">
+<meta property="og:description" content="本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。   功能和工具 静态资源服务器和域名: github page 静态博客资源: hexo 博客主题: NexT 博客评价: gitalk 博客访问记录: GoogleAnalytics, 百度统计 图床:">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-03-07T12:39:50.000Z">
-<meta property="article:modified_time" content="2020-03-07T12:59:10.966Z">
+<meta property="article:modified_time" content="2020-03-07T13:20:23.859Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="教程">
 <meta property="article:tag" content="Hexo">
@@ -60,6 +60,15 @@
     </script>
 
 
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?10da0e2af4774cc3e613a29b08f88774";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
 
 
 
@@ -196,7 +205,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-03-07 20:39:50 / Modified: 20:59:10" itemprop="dateCreated datePublished" datetime="2020-03-07T20:39:50+08:00">2020-03-07</time>
+              <time title="Created: 2020-03-07 20:39:50 / Modified: 21:20:23" itemprop="dateCreated datePublished" datetime="2020-03-07T20:39:50+08:00">2020-03-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -223,13 +232,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。最好的方法建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。  </p>
+        <p>本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。  </p>
 <h2 id="功能和工具"><a href="#功能和工具" class="headerlink" title="功能和工具"></a>功能和工具</h2><ul>
 <li>静态资源服务器和域名: <a href="https://pages.github.com/" target="_blank" rel="noopener">github page</a></li>
 <li>静态博客资源: <a href="https://github.com/hexojs/hexo" target="_blank" rel="noopener">hexo</a></li>
 <li>博客主题: <a href="https://theme-next.org/docs/" target="_blank" rel="noopener">NexT</a></li>
 <li>博客评价: <a href="https://github.com/gitalk/gitalk" target="_blank" rel="noopener">gitalk</a></li>
-<li>博客访问记录: <a href="https://theme-next.org/docs/third-party-services/statistics-and-analytics#Google-Analytics" target="_blank" rel="noopener">GoogleAnalytics</a></li>
+<li>博客访问记录: <a href="https://theme-next.org/docs/third-party-services/statistics-and-analytics#Google-Analytics" target="_blank" rel="noopener">GoogleAnalytics</a>, <a href="https://tongji.baidu.com/web/welcome/basic" target="_blank" rel="noopener">百度统计</a></li>
 <li>图床: <a href="https://www.qiniu.com/products/kodo" target="_blank" rel="noopener">七牛云对象存储</a></li>
 </ul>
 
