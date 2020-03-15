@@ -29,7 +29,7 @@
 <meta property="og:description" content="基于MacOS, 项目代码 环境准备 可运行的k8s集群，以及kubectl   kubebuilder. brew install kubebuilder, 如果还需要跑测试什么的，建议使用二进制安装, 踩到了一个brew安装跑不了测试的坑，后面会说到。   kustomize. brew install kustomize    基本概念首先介绍一下本文内容所涉及到的基本概念。 CRD (Cu">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-03-13T12:55:30.000Z">
-<meta property="article:modified_time" content="2020-03-15T08:26:39.496Z">
+<meta property="article:modified_time" content="2020-03-15T08:30:58.528Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="k8s">
 <meta property="article:tag" content="operator">
@@ -214,7 +214,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-15 16:26:39" itemprop="dateModified" datetime="2020-03-15T16:26:39+08:00">2020-03-15</time>
+                <time title="Modified: 2020-03-15 16:30:58" itemprop="dateModified" datetime="2020-03-15T16:30:58+08:00">2020-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -354,7 +354,7 @@
 <p>因此在部署过程中，修改Makefile跳过了go test.</p>
 <p>部署完成后查看状态</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get cronjob.batch.tutorial.kubebuilder.io -o yaml</span><br><span class="line">kubectl get job</span><br></pre></td></tr></table></figure>
-<p>如果不停的有新的job产生出来，计算执行成功了。</p>
+<p>如果不停的有新的job产生出来就算执行成功了。</p>
 <p>参考文档：<br><a href="https://book.kubebuilder.io/cronjob-tutorial/cronjob-tutorial.html" target="_blank" rel="noopener">kubebuilder官网</a></p>
 
     </div>
