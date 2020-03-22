@@ -180,6 +180,97 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/java9-String-use-byte-not-char/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/java9-String-use-byte-not-char/" class="post-title-link" itemprop="url">Java9 后String 为什么使用byte[]而不是char?</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-22 20:31:16 / Modified: 20:32:17" itemprop="dateCreated datePublished" datetime="2020-03-22T20:31:16+08:00">2020-03-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>之前认知里面，java的String一直是使用char数组，但是今天点进去瞟了一眼，发现不对。<br>源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * The value is used for character storage.</span><br><span class="line"> *</span><br><span class="line"> * @implNote This field is trusted by the VM, and is a subject to</span><br><span class="line"> * constant folding if String instance is constant. Overwriting this</span><br><span class="line"> * field after construction will cause problems.</span><br><span class="line"> *</span><br><span class="line"> * Additionally, it is marked with &#123;@link Stable&#125; to trust the contents</span><br><span class="line"> * of the array. No other facility in JDK provides this functionality (yet).</span><br><span class="line"> * &#123;@link Stable&#125; is safe here, because value is never null.</span><br><span class="line"> *&#x2F;</span><br><span class="line">@Stable</span><br><span class="line">private final byte[] value;</span><br></pre></td></tr></table></figure>
+<p>这分明就是byte数组，哪里是char了？于是上网查了下，这个改动在 Java9以后就发生了。</p>
+<h4 id="为什么有这个改动？char-gt-byte"><a href="#为什么有这个改动？char-gt-byte" class="headerlink" title="为什么有这个改动？char -&gt; byte"></a>为什么有这个改动？char -&gt; byte</h4><p>主要还是节省空间。</p>
+<p>JDK9 之前的库的 String 类的实现使用了 char 数组来存放字符串，char 占用16位，即两字节。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private final char value[];</span><br></pre></td></tr></table></figure>
+<p>这种情况下，如果我们要存储字符A，则为<code>0x00 0x41</code>，此时前面的一个字节空间浪费了。但如果保存中文字符则不存在浪费的情况，也就是说如果保存 <code>ISO-8859-1</code> 编码内的字符则浪费，之外的字符则不会浪费。</p>
+<p>而 JDK9 后 String 类的实现使用了 byte 数组存放字符串，每个 byte 占用8位，即1字节。<br><code>private final byte[] value</code><br>但是如果遇到<code>ISO-8859-1</code> 编码外的字符串呢？比如中文咋办？</p>
+<h4 id="Java9之后String的新属性，coder编码格式"><a href="#Java9之后String的新属性，coder编码格式" class="headerlink" title="Java9之后String的新属性，coder编码格式"></a>Java9之后String的新属性，<code>coder</code>编码格式</h4><p>借用网上盗的一个图：<br><img src="https://upload-images.jianshu.io/upload_images/3972578-1922e2b5446bc0db.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Java String的演进"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private final byte coder;</span><br><span class="line">static final boolean COMPACT_STRINGS;</span><br><span class="line">static &#123;</span><br><span class="line">    COMPACT_STRINGS &#x3D; true;</span><br><span class="line">&#125;</span><br><span class="line">byte coder() &#123;</span><br><span class="line">    return COMPACT_STRINGS ? coder : UTF16;</span><br><span class="line">&#125;</span><br><span class="line">@Native static final byte LATIN1 &#x3D; 0;</span><br><span class="line">@Native static final byte UTF16  &#x3D; 1;</span><br></pre></td></tr></table></figure>
+
+<p>是编码格式的标识，在计算字符串长度或者调用 indexOf() 函数时，需要根据这个字段，判断如何计算字符串长度。<br>coder 属性默认有 0 和 1 两个值。如果 String判断字符串只包含了 Latin-1，则 coder 属性值为 0 ，反之则为 1</p>
+<ul>
+<li>0 代表Latin-1（单字节编码）</li>
+<li>1 代表 UTF-16 编码。。<br>Java9 默认打开<code>COMPACT_STRINGS</code>, 而如果想要取消紧凑的布局可以通过配置 VM 参数<code>-XX:-CompactStrings</code>实现。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/build-k8s-operator-with-kubebuild-demo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -594,20 +685,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

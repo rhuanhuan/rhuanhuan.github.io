@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/java9-String-use-byte-not-char/</loc>
+    
+    <lastmod>2020-03-22T12:32:17.281Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/build-k8s-operator-with-kubebuild-demo/</loc>
     
     <lastmod>2020-03-15T08:30:58.528Z</lastmod>
