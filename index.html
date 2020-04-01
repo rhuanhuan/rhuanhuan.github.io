@@ -205,7 +205,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-04-01 21:47:53 / Modified: 23:47:32" itemprop="dateCreated datePublished" datetime="2020-04-01T21:47:53+08:00">2020-04-01</time>
+              <time title="Created: 2020-04-01 21:47:53 / Modified: 23:48:46" itemprop="dateCreated datePublished" datetime="2020-04-01T21:47:53+08:00">2020-04-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -337,7 +337,7 @@
 <li>准备两个终端，在此命名为 mysql 终端 1 和 mysql 终端 2，再准备一张测试表 test，写入一条测试数据并调整隔离级别为 READ COMMITTED，任意一个终端执行即可。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SET @@session.transaction_isolation &#x3D; &#39;READ-COMMITTED&#39;;</span><br><span class="line">create database test;</span><br><span class="line">use test;</span><br><span class="line">create table test(id int primary key);</span><br><span class="line">insert into test(id) values(1);</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 1，开启一个事务，将 ID 为 1 的记录更新为 2，并确认记录数变更过来。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">update test set id &#x3D; 2 where id &#x3D; 1;</span><br><span class="line">select * from test; -- 此时看到一条记录为 2</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 2，开启一个事务后，查看表中的数据。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">use test;</span><br><span class="line">begin;</span><br><span class="line">select * from test; -- 此时看一条 ID 为 1 的记录</span><br></pre></td></tr></table></figure></li>
-<li>登录 mysql 终端 1，提交事务。   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">commit;</span><br></pre></td></tr></table></figure></li>
+<li>登录 mysql 终端 1，提交事务。<code>commit;</code></li>
 <li>切换到 mysql 终端 2。   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test; -- 此时看到一条 ID 为 2 的记录</span><br></pre></td></tr></table></figure>
 
 </li>
