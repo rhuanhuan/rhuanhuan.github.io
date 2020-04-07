@@ -180,6 +180,101 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/java-4-kind-of-references/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/java-4-kind-of-references/" class="post-title-link" itemprop="url">java 4 kind of references</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-04-07 22:26:54 / Modified: 22:28:18" itemprop="dateCreated datePublished" datetime="2020-04-07T22:26:54+08:00">2020-04-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/JVM/Reference/" itemprop="url" rel="index"><span itemprop="name">Reference</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Java中的引用是什么"><a href="#Java中的引用是什么" class="headerlink" title="Java中的引用是什么"></a>Java中的引用是什么</h2><p>JDK1.2之前，引用指的是: <strong>如果reference类型的数据中，存储的数值代表的是另一块内存的起始地址，就称该reference数据是代表某块内存、某个对象的引用。</strong><br>这个定义下只有“被引用”和“未被引用” 两种状态。不是很灵活，比如缓存一般期望的是: <strong>内存空间充足，保存在内存中；内存空间不够，就被回收</strong>。</p>
+<p>因此在JDK1.2之后，Java扩展了引用，有四种引用类型:</p>
+<ul>
+<li>强引用（Strongly Reference）</li>
+<li>软引用（Soft Reference）</li>
+<li>弱引用（Weak Reference）</li>
+<li>虚引用（Phantom Reference）</li>
+</ul>
+<h2 id="四种引用类型"><a href="#四种引用类型" class="headerlink" title="四种引用类型"></a>四种引用类型</h2><p>大概的对比如下:<br>|类型|回收时间| 使用场景 |<br>|—|—|—|<br>|强引用|不回收|最常见的日常场景|<br>|软引用|即将OOM时候|经常使用的缓存，只是想避免OOM问题，图片、视频编辑|<br>|弱引用|垃圾回收时候|使用概率较低缓存，<code>WeakHashMap</code>|<br>|虚引用|半回收状态，直接无法访问，引用队列出队回收|运行对象销毁前的一些操作；<br>比finalizer()更可靠，更推荐|</p>
+<h4 id="强引用（Strongly-Reference）"><a href="#强引用（Strongly-Reference）" class="headerlink" title="强引用（Strongly Reference）"></a>强引用（Strongly Reference）</h4><p>传统的常见“引用”。比如<code>Object o = new Object()</code>，只要存在，就不会被回收。</p>
+<h4 id="软引用（Soft-Reference）"><a href="#软引用（Soft-Reference）" class="headerlink" title="软引用（Soft Reference）"></a>软引用（Soft Reference）</h4><p>还有用，但非必须的对象，在OOM之前会把他们回收，如果这些回收完了还是内存不够，才会OOM。可以通过<code>java.lang.ref.SoftReference</code>使用软引用。<br>软引用可以和一个引用队列（<strong>ReferenceQueue</strong>）联合使用，如果软引用所引用的对象被垃圾回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。</p>
+<p>使用场景:<br>通常用于内存敏感的高速缓存。此外图片编辑器，视频编辑器之类的软件可以使用这种思路。</p>
+<h4 id="弱引用（Weak-Reference）"><a href="#弱引用（Weak-Reference）" class="headerlink" title="弱引用（Weak Reference）"></a>弱引用（Weak Reference）</h4><p>还有用，但非必须的对象。下次垃圾收集会被回收。</p>
+<p>使用场景：<br>弱引用和软引用都可以用来做缓存，可以根据情况来判断使用哪一种缓存。<br>弱引用也通常用于实现规范化映射。</p>
+<h4 id="虚引用（Phantom-Reference）"><a href="#虚引用（Phantom-Reference）" class="headerlink" title="虚引用（Phantom Reference）"></a>虚引用（Phantom Reference）</h4><p>虚引用的存在对生存时间没有任何影响，也无法通过虚引用获取对象实例，唯一的作用就是对象被回收时候收到一个系统通知。<strong>必须配合引用队列（ReferenceQueue）使用。</strong></p>
+<p>使用场景：<br>对象销毁前的一些操作，比如说资源释放等(推荐的做法)。Object.finalize()虽然也可以做这类动作，但是这个方式即不安全又低效，在JDK 9已经被标记废弃。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/mysql-transaction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -203,10 +298,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-04-01 21:47:53 / Modified: 23:48:46" itemprop="dateCreated datePublished" datetime="2020-04-01T21:47:53+08:00">2020-04-01</time>
+              <time title="Created: 2020-04-01 21:47:53" itemprop="dateCreated datePublished" datetime="2020-04-01T21:47:53+08:00">2020-04-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-02 21:41:10" itemprop="dateModified" datetime="2020-04-02T21:41:10+08:00">2020-04-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -245,7 +346,7 @@
 <h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p>重做日志 redo log 分为两部分：  </p>
 <ul>
 <li>内存中的重做日志缓冲（redo log buffer），是易丢失的；</li>
-<li>重做日志文件（redo log file），是持久的。InnoDB通过Force Log at Commit机制来实现持久性，<br>当commit时，必须先将事务的所有日志写到重做日志文件进行持久化，待commit操作完成才算完成。  </li>
+<li>重做日志文件（redo log file），是持久的。InnoDB通过<strong>Force Log at Commit机制</strong>来实现持久性，也有说<strong>Write-Ahead Log(预先日志持久化)</strong>，当commit时，必须先将事务的所有日志写到重做日志文件进行持久化，待commit操作完成才算完成。  </li>
 </ul>
 <p>InnoDB在下面情况下会将重做日志缓冲的内容写入重做日志文件：  </p>
 <ul>
@@ -335,7 +436,7 @@
 <h4 id="READ-COMMITTED（读提交）–-不可重复读问题"><a href="#READ-COMMITTED（读提交）–-不可重复读问题" class="headerlink" title="READ COMMITTED（读提交）– 不可重复读问题"></a>READ COMMITTED（读提交）– 不可重复读问题</h4><p>一个事务可以读取另一个已提交的事务，多次读取会造成不一样的结果，此现象称为不可重复读问题，<br>Oracle 和 SQL Server 的默认隔离级别。</p>
 <ol>
 <li>准备两个终端，在此命名为 mysql 终端 1 和 mysql 终端 2，再准备一张测试表 test，写入一条测试数据并调整隔离级别为 READ COMMITTED，任意一个终端执行即可。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SET @@session.transaction_isolation &#x3D; &#39;READ-COMMITTED&#39;;</span><br><span class="line">create database test;</span><br><span class="line">use test;</span><br><span class="line">create table test(id int primary key);</span><br><span class="line">insert into test(id) values(1);</span><br></pre></td></tr></table></figure></li>
-<li>登录 mysql 终端 1，开启一个事务，将 ID 为 1 的记录更新为 2，并确认记录数变更过来。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">update test set id &#x3D; 2 where id &#x3D; 1;</span><br><span class="line">select * from test; -- 此时看到一条记录为 2</span><br></pre></td></tr></table></figure></li>
+<li>登录 mysql 终端 1，开启Force Log at Commit 一个事务，将 ID 为 1 的记录更新为 2，并确认记录数变更过来。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">update test set id &#x3D; 2 where id &#x3D; 1;</span><br><span class="line">select * from test; -- 此时看到一条记录为 2</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 2，开启一个事务后，查看表中的数据。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">use test;</span><br><span class="line">begin;</span><br><span class="line">select * from test; -- 此时看一条 ID 为 1 的记录</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 1，提交事务。<code>commit;</code></li>
 <li>切换到 mysql 终端 2。   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from test; -- 此时看到一条 ID 为 2 的记录</span><br></pre></td></tr></table></figure>
@@ -357,7 +458,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into test(id,name) values(1,&#39;b&#39;); -- 此时报主键冲突的错误</span><br></pre></td></tr></table></figure>
 <p>也许到这里您心里可能会有疑问，明明在第 5 步没有数据，为什么在这里会报错呢？</p>
 <p>其实这就是该隔离级别下可能产生的问题，MySQL 称之为<strong>幻读</strong>。注意我在这里强调的是 MySQL 数据库，Oracle 数据库对于幻读的定义可能有所不同。</p>
-<h4 id="SERIALIZABLE（序列化）"><a href="#SERIALIZABLE（序列化）" class="headerlink" title="SERIALIZABLE（序列化）"></a>SERIALIZABLE（序列化）</h4><p>在该隔离级别下事务都是串行顺序执行的，MySQL 数据库的 InnoDB 引擎会给读操作隐式加一把读共享锁，从而避免了脏读、不可重读复读和幻读问题。</p>
+<h4 id="SERIALIZABLE（串行化）"><a href="#SERIALIZABLE（串行化）" class="headerlink" title="SERIALIZABLE（串行化）"></a>SERIALIZABLE（串行化）</h4><p>在该隔离级别下事务都是串行顺序执行的，MySQL 数据库的 InnoDB 引擎会给读操作隐式加一把读共享锁，从而避免了脏读、不可重读复读和幻读问题。</p>
 <ol>
 <li>准备两个终端，在此命名为 mysql 终端 1 和 mysql 终端 2，分别登入 mysql，准备一张测试表 test 并调整隔离级别为 SERIALIZABLE，任意一个终端执行即可。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SET @@session.transaction_isolation &#x3D; &#39;SERIALIZABLE&#39;;</span><br><span class="line">create database test;</span><br><span class="line">use test;</span><br><span class="line">create table test(id int primary key);</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 1，开启一个事务，并写入一条数据。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">insert into test(id) values(1);</span><br></pre></td></tr></table></figure></li>
@@ -386,11 +487,11 @@
 <p>这里主要讲一下Next-Key Lock，利用Next-key Lock锁定的不是单个值而是一个范围，他的目的就是为了阻止多个事务将记录插入到同一范围内从而导致幻读。  </p>
 <p><strong>注意了，如果走唯一索引，那么Next-Key Lock会降级为Record Lock，即仅锁住索引本身，而不是范围。也就是说Next-Key Lock前置条件为事务隔离级别为RR且查询的索引走的非唯一索引、主键索引。</strong></p>
 <p>下面我们用个例子详细说一下。首先建立一张表：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE T (id int ,f_id int,PRIMARY KEY (id), KEY(f_id)) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8</span><br><span class="line">insert into T SELECT 1,1;</span><br><span class="line">insert into T SELECT 3,1;</span><br><span class="line">insert into T SELECT 5,3;</span><br><span class="line">insert into T SELECT 7,6;</span><br><span class="line">insert into T SELECT 10,8;复制代码</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE T (id int ,f_id int,PRIMARY KEY (id), KEY(f_id)) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8</span><br><span class="line">insert into T SELECT 1,1;</span><br><span class="line">insert into T SELECT 3,1;</span><br><span class="line">insert into T SELECT 5,3;</span><br><span class="line">insert into T SELECT 7,6;</span><br><span class="line">insert into T SELECT 10,8;</span><br></pre></td></tr></table></figure>
 
-<p>事务A执行如下语句：<br><code>SELECT * FROM T WHERE f_id = 3 FOR UPDATE复制代码</code></p>
+<p>事务A执行如下语句：<br><code>SELECT * FROM T WHERE f_id = 3 FOR UPDATE;</code></p>
 <p>这时SQL语句走非唯一索引，因此使用Next-Key Locking加锁，并且有2个索引，其需要分别进行锁定。对于聚集索引，其仅对id等于5的索引加上Record Lock。而对于辅助索引，其加上Next-Key Lock，锁定了范围（1,3），特别需要注意的是，InnoDB存储引擎还会对辅助索引下一个键值加上Gap Lock，即范围（3.6）的锁。所以如果在新session中执行如下语句都会报错[Err] 1205 - Lock wait timeout exceeded; try restarting transaction：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from T where id &#x3D; 5 lock in share MODE -- 不能执行，因为事务A已经给id&#x3D;5的值加上了X锁，执行会被阻塞</span><br><span class="line">INSERT INTO T SELECT 4,2  -- 不能执行，辅助索引的值为2，在（1,3）的范围内，执行阻塞</span><br><span class="line">INSERT INTO T SELECT 6,5  -- 不能执行，gap锁会锁住（3,6）的范围，执行阻塞复制代码</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from T where id &#x3D; 5 lock in share MODE; -- 不能执行，因为事务A已经给id&#x3D;5的值加上了X锁，执行会被阻塞</span><br><span class="line">INSERT INTO T SELECT 4,2  -- 不能执行，辅助索引的值为2，在（1,3）的范围内，执行阻塞</span><br><span class="line">INSERT INTO T SELECT 6,5  -- 不能执行，gap锁会锁住（3,6）的范围，执行阻塞复制代码</span><br></pre></td></tr></table></figure>
 
 <p>此时想象一下，事务A锁定了fid =5 的记录， 正常会有个gap lock，锁住（5,6），那么如果没有（5,6）的gap锁，那么用户可以插入索引 fid 为5的记录，这样事务A再次查询就会返回一个不同的记录，也就导致了幻读的产生。<br>同理，如果我们事务A执行的是<code>select * from T where f_id = 10 FOR UPDATE</code>,在表里查不到数据，但是基于Next-Key Lock会锁住（8，+∞），我们执行<code>INSERT INTO T SELECT 6,11</code>是无法插入成功的，这就从根本上解决了幻读问题。</p>
 <h4 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h4><p>死锁是指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁，这些永远在互相等待的进程称为死锁进程。</p>
@@ -943,20 +1044,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
