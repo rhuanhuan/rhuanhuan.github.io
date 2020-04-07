@@ -205,7 +205,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-04-07 22:26:54 / Modified: 22:31:56" itemprop="dateCreated datePublished" datetime="2020-04-07T22:26:54+08:00">2020-04-07</time>
+              <time title="Created: 2020-04-07 22:26:54 / Modified: 23:25:42" itemprop="dateCreated datePublished" datetime="2020-04-07T22:26:54+08:00">2020-04-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -274,7 +274,7 @@
 </tr>
 <tr>
 <td>虚引用</td>
-<td>半回收状态，直接无法访问，引用队列出队回收</td>
+<td>无法访问，引用被回收时候回收对象</td>
 <td>运行对象销毁前的一些操作；<br>比finalizer()更可靠，更推荐</td>
 </tr>
 </tbody></table>
@@ -284,7 +284,7 @@
 <h4 id="弱引用（Weak-Reference）"><a href="#弱引用（Weak-Reference）" class="headerlink" title="弱引用（Weak Reference）"></a>弱引用（Weak Reference）</h4><p>还有用，但非必须的对象。下次垃圾收集会被回收。</p>
 <p>使用场景：<br>弱引用和软引用都可以用来做缓存，可以根据情况来判断使用哪一种缓存。<br>弱引用也通常用于实现规范化映射。</p>
 <h4 id="虚引用（Phantom-Reference）"><a href="#虚引用（Phantom-Reference）" class="headerlink" title="虚引用（Phantom Reference）"></a>虚引用（Phantom Reference）</h4><p>虚引用的存在对生存时间没有任何影响，也无法通过虚引用获取对象实例，唯一的作用就是对象被回收时候收到一个系统通知。<strong>必须配合引用队列（ReferenceQueue）使用。</strong></p>
-<p>使用场景：<br>对象销毁前的一些操作，比如说资源释放等(推荐的做法)。Object.finalize()虽然也可以做这类动作，但是这个方式即不安全又低效，在JDK 9已经被标记废弃。</p>
+<p>使用场景：<br>对象销毁前的一些操作，比如说资源释放等(推荐的做法)。Object.finalize()虽然也可以做这类动作，但是这个方式即不安全又低效，在JDK 9已经被标记废弃。<br>继承自<code>java.lang.ref.PhantomReference</code>的<code>jdk.internal.ref.Cleaner</code>，是一个更加轻量、健壮的<code>Object.finalize()</code>的替代品。</p>
 
       
     </div>
