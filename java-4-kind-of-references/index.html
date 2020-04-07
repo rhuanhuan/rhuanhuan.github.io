@@ -29,7 +29,7 @@
 <meta property="og:description" content="Java中的引用是什么JDK1.2之前，引用指的是: 如果reference类型的数据中，存储的数值代表的是另一块内存的起始地址，就称该reference数据是代表某块内存、某个对象的引用。这个定义下只有“被引用”和“未被引用” 两种状态。不是很灵活，比如缓存一般期望的是: 内存空间充足，保存在内存中；内存空间不够，就被回收。 因此在JDK1.2之后，Java扩展了引用，有四种引用类型:  强引用">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-07T14:26:54.000Z">
-<meta property="article:modified_time" content="2020-04-07T14:28:47.491Z">
+<meta property="article:modified_time" content="2020-04-07T14:30:46.474Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="jvm">
@@ -208,7 +208,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-04-07 22:26:54 / Modified: 22:28:47" itemprop="dateCreated datePublished" datetime="2020-04-07T22:26:54+08:00">2020-04-07</time>
+              <time title="Created: 2020-04-07 22:26:54 / Modified: 22:30:46" itemprop="dateCreated datePublished" datetime="2020-04-07T22:26:54+08:00">2020-04-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,7 +251,36 @@
 <li>弱引用（Weak Reference）</li>
 <li>虚引用（Phantom Reference）</li>
 </ul>
-<h2 id="四种引用类型"><a href="#四种引用类型" class="headerlink" title="四种引用类型"></a>四种引用类型</h2><p>大概的对比如下:<br>|类型|回收时间| 使用场景 |<br>|—|—|—|<br>|强引用|不回收|最常见的日常场景|<br>|软引用|即将OOM时候|经常使用的缓存，只是想避免OOM问题，图片、视频编辑|<br>|弱引用|垃圾回收时候|使用概率较低缓存，<code>WeakHashMap</code>|<br>|虚引用|半回收状态，直接无法访问，引用队列出队回收|运行对象销毁前的一些操作；<br>比finalizer()更可靠，更推荐|</p>
+<h2 id="四种引用类型"><a href="#四种引用类型" class="headerlink" title="四种引用类型"></a>四种引用类型</h2><p>大概的对比如下:</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>回收时间</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>强引用</td>
+<td>不回收</td>
+<td>最常见的日常场景</td>
+</tr>
+<tr>
+<td>软引用</td>
+<td>即将OOM时候</td>
+<td>经常使用的缓存，只是想避免OOM问题，图片、视频编辑</td>
+</tr>
+<tr>
+<td>弱引用</td>
+<td>垃圾回收时候</td>
+<td>使用概率较低缓存，<code>WeakHashMap</code></td>
+</tr>
+<tr>
+<td>虚引用</td>
+<td>半回收状态，直接无法访问，引用队列出队回收</td>
+<td>运行对象销毁前的一些操作；<br>比finalizer()更可靠，更推荐</td>
+</tr>
+</tbody></table>
 <h4 id="强引用（Strongly-Reference）"><a href="#强引用（Strongly-Reference）" class="headerlink" title="强引用（Strongly Reference）"></a>强引用（Strongly Reference）</h4><p>传统的常见“引用”。比如<code>Object o = new Object()</code>，只要存在，就不会被回收。</p>
 <h4 id="软引用（Soft-Reference）"><a href="#软引用（Soft-Reference）" class="headerlink" title="软引用（Soft Reference）"></a>软引用（Soft Reference）</h4><p>还有用，但非必须的对象，在OOM之前会把他们回收，如果这些回收完了还是内存不够，才会OOM。可以通过<code>java.lang.ref.SoftReference</code>使用软引用。<br>软引用可以和一个引用队列（<strong>ReferenceQueue</strong>）联合使用，如果软引用所引用的对象被垃圾回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。</p>
 <p>使用场景:<br>通常用于内存敏感的高速缓存。此外图片编辑器，视频编辑器之类的软件可以使用这种思路。</p>
