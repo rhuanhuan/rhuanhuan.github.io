@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://yoursite.com/java-4-kind-of-references/</loc>
-    <lastmod>2020-04-07</lastmod>
+    <loc>http://yoursite.com/high-available-kong-nginx-deploy-in-k8s/</loc>
+    <lastmod>2020-04-08</lastmod>
   </url>  <url>
     <loc>http://yoursite.com/mysql-transaction/</loc>
-    <lastmod>2020-04-02</lastmod>
+    <lastmod>2020-04-08</lastmod>
+  </url>  <url>
+    <loc>http://yoursite.com/java-4-kind-of-references/</loc>
+    <lastmod>2020-04-07</lastmod>
   </url>  <url>
     <loc>http://yoursite.com/java9-String-use-byte-not-char/</loc>
     <lastmod>2020-03-22</lastmod>

@@ -180,6 +180,89 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/high-available-kong-nginx-deploy-in-k8s/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/high-available-kong-nginx-deploy-in-k8s/" class="post-title-link" itemprop="url">high available kong/nginx deploy in k8s</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-04-08 14:45:12 / Modified: 16:00:09" itemprop="dateCreated datePublished" datetime="2020-04-08T14:45:12+08:00">2020-04-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Cloud-Native/" itemprop="url" rel="index"><span itemprop="name">Cloud Native</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Cloud-Native/Kong/" itemprop="url" rel="index"><span itemprop="name">Kong</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>生产环境使用Kong做API网关，部署在GKE，为了提高可用性，做了以下优化，实现0宕机升级:</p>
+<ul>
+<li><strong>使用反亲和性部署到不同k8s节点上</strong>; 避免单节点问题造成宕机，同时充分利用node的资源</li>
+<li><strong>健康检查</strong>; 节点出问题, 及时重启调度</li>
+<li><strong>滚动升级</strong>; RollingUpdate</li>
+<li><strong>pod处理完请求再关闭</strong>; 调用k8s节点的生命周期函数。pre-stop时候 <code>nignx -s quit</code> 命令，处理完请求再关闭节点</li>
+<li><strong>AlertManager报警</strong>; 5min不可用alert告警</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/java-4-kind-of-references/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -335,7 +418,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-02 21:41:10" itemprop="dateModified" datetime="2020-04-02T21:41:10+08:00">2020-04-02</time>
+                <time title="Modified: 2020-04-08 13:42:18" itemprop="dateModified" datetime="2020-04-08T13:42:18+08:00">2020-04-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -363,19 +446,29 @@
 
       
           <p>事务是一个序列操作，其中的操作要么都执行，要么都不执行，它是一个不可分割的工作单位；数据库事务的 ACID 四大特性是事务的基础，了解了 ACID 是如何实现的，我们也就清楚了事务的实现。</p>
-<h2 id="MySQL-如何保证事务性"><a href="#MySQL-如何保证事务性" class="headerlink" title="MySQL 如何保证事务性?"></a>MySQL 如何保证事务性?</h2><p>结论:</p>
+<h2 id="MySQL-如何保证事务性"><a href="#MySQL-如何保证事务性" class="headerlink" title="MySQL 如何保证事务性?"></a>MySQL 如何保证事务性?</h2><p>MySQL事务在哪实现的？</p>
+<ul>
+<li>MySQL中服务器层不管理事务，事务是由存储引擎实现的。</li>
+<li>MySQL支持事务的存储引擎有InnoDB、NDB Cluster等，其中InnoDB的使用最为广泛；其他存储引擎不支持事务，如MyIsam、Memory等。</li>
+</ul>
+<p>MySQL事务如何实现的？</p>
 <ul>
 <li>redo log重做日志用来保证事务的持久性</li>
 <li>undo log回滚日志保证事务的原子性</li>
 <li>undo log+redo log保证事务的一致性</li>
 <li>锁（共享、排他）用来保证事务的隔离性</li>
 </ul>
-<h2 id="持久性与redo-log"><a href="#持久性与redo-log" class="headerlink" title="持久性与redo log"></a>持久性与redo log</h2><h3 id="持久性"><a href="#持久性" class="headerlink" title="持久性"></a>持久性</h3><p>而事务的持久性就体现在，一旦事务被提交，那么数据一定会被写入到数据库中并持久存储起来。就算数据没来得及写入磁盘就宕机时，在下次重新启动后能够成功恢复数据（持久性）；</p>
-<p>当事务已经被提交之后，就无法再次回滚了，唯一能够撤回已经提交的事务的方式就是创建一个相反的事务对原操作进行『补偿』，这也是事务持久性的体现之一。</p>
+<h2 id="持久性与redo-log"><a href="#持久性与redo-log" class="headerlink" title="持久性与redo log"></a>持久性与redo log</h2><h3 id="持久性"><a href="#持久性" class="headerlink" title="持久性"></a>持久性</h3><p>而事务的持久性就体现在，一旦事务被提交，那么数据一定会被写入到数据库中并持久存储起来。就算数据没来得及写入磁盘就宕机时，在下次重新启动后能够成功恢复数据（持久性）；<br>当事务已经被提交之后，就无法再次回滚了，唯一能够撤回已经提交的事务的方式就是创建一个相反的事务对原操作进行『补偿』，这也是事务持久性的体现之一。</p>
+<h3 id="redo-log存在的背景"><a href="#redo-log存在的背景" class="headerlink" title="redo log存在的背景"></a>redo log存在的背景</h3><p>InnoDB作为MySQL的存储引擎，数据是存放在磁盘中的，但如果每次读写数据都需要磁盘IO，效率会很低。为此，InnoDB提供了缓存(Buffer Pool)，Buffer Pool中包含了磁盘中部分数据页的映射，作为访问数据库的缓冲：</p>
+<ul>
+<li>当从数据库读取数据时，会首先从Buffer Pool中读取，如果Buffer Pool中没有，则从磁盘读取后放入Buffer Pool；</li>
+<li>当向数据库写入数据时，会首先写入Buffer Pool，Buffer Pool中修改的数据会定期刷新到磁盘中（这一过程称为刷脏）。</li>
+</ul>
+<p>Buffer Pool的使用大大提高了读写数据的效率，但是也带了新的问题：如果MySQL宕机，而此时Buffer Pool中修改的数据还没有刷新到磁盘，就会导致数据的丢失，事务的持久性无法保证。</p>
 <h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p>重做日志 redo log 分为两部分：  </p>
 <ul>
 <li>内存中的重做日志缓冲（redo log buffer），是易丢失的；</li>
-<li>重做日志文件（redo log file），是持久的。InnoDB通过<strong>Force Log at Commit机制</strong>来实现持久性，也有说<strong>Write-Ahead Log(预先日志持久化)</strong>，当commit时，必须先将事务的所有日志写到重做日志文件进行持久化，待commit操作完成才算完成。  </li>
+<li>重做日志文件（redo log file），是持久的。InnoDB通过<strong>Force Log at Commit机制</strong>来实现持久性，即<strong>WAL(Write-Ahead Log)</strong>，当commit时，必须先将事务的所有日志写到重做日志文件进行持久化，待commit操作完成才算完成。  </li>
 </ul>
 <p>InnoDB在下面情况下会将重做日志缓冲的内容写入重做日志文件：  </p>
 <ul>
@@ -1073,20 +1166,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
