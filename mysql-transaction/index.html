@@ -29,7 +29,7 @@
 <meta property="og:description" content="事务是一个序列操作，其中的操作要么都执行，要么都不执行，它是一个不可分割的工作单位；数据库事务的 ACID 四大特性是事务的基础，了解了 ACID 是如何实现的，我们也就清楚了事务的实现。 MySQL 如何保证事务性?MySQL事务在哪实现的？  MySQL中服务器层不管理事务，事务是由存储引擎实现的。 MySQL支持事务的存储引擎有InnoDB、NDB Cluster等，其中InnoDB的使用最">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-01T13:47:53.000Z">
-<meta property="article:modified_time" content="2020-04-08T05:42:18.813Z">
+<meta property="article:modified_time" content="2020-04-09T12:51:35.386Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="Mysql">
 <meta property="article:tag" content="Transaction">
@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-08 13:42:18" itemprop="dateModified" datetime="2020-04-08T13:42:18+08:00">2020-04-08</time>
+                <time title="Modified: 2020-04-09 20:51:35" itemprop="dateModified" datetime="2020-04-09T20:51:35+08:00">2020-04-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -281,8 +281,20 @@
 <ul>
 <li>重做日志是在InnoDB层产生的</li>
 <li>重做日志是物理格式日志，记录的是对每个页的修改</li>
-<li>重做日志在事务进行中不断被写入，而且是顺序写入</li>
+<li>重做日志在事务进行中不断被写入，而且是顺序写入（MySQL持久化时候）</li>
 </ul>
+<p>redo log也需要在事务提交时将日志写入磁盘，为什么它比直接将Buffer Pool中修改的数据写入磁盘(即刷脏)要快呢？主要有以下两方面的原因：</p>
+<ol>
+<li>刷脏是随机IO，因为每次修改的数据位置随机，但写redo log是追加操作，属于顺序IO。</li>
+<li>刷脏是以数据页（Page）为单位的，MySQL默认页大小是16KB，一个Page上一个小修改都要整页写入；而redo log中只包含真正需要写入的部分，无效IO大大减少。</li>
+</ol>
+<h3 id="redo-log-与-bin-log"><a href="#redo-log-与-bin-log" class="headerlink" title="redo log 与 bin log"></a>redo log 与 bin log</h3><p>我们知道，在MySQL中还存在binlog(二进制日志)也可以记录写操作并用于数据的恢复，但二者是有着根本的不同的：</p>
+<ol>
+<li>作用不同：redo log是用于crash recovery的，保证MySQL宕机也不会影响持久性；binlog是用于point-in-time recovery的，保证服务器可以基于时间点恢复数据，此外binlog还用于主从复制。</li>
+<li>层次不同：redo log是InnoDB存储引擎实现的，而binlog是MySQL的服务器层(可以参考文章前面对MySQL逻辑架构的介绍)实现的，同时支持InnoDB和其他存储引擎。</li>
+<li>内容不同：redo log是物理日志，内容基于磁盘的Page；binlog的内容是二进制的，根据binlog_format参数的不同，可能基于sql语句、基于数据本身或者二者的混合。</li>
+<li>写入时机不同：binlog在事务提交时写入；redo log的写入时机相对多元：</li>
+</ol>
 <h2 id="原子性与undo-log"><a href="#原子性与undo-log" class="headerlink" title="原子性与undo log"></a>原子性与undo log</h2><h3 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h3><p>原子性在并发编程里面也非常常见。完成一件事情可能需要多个操作，当这些操作某一步出现错误或抛出异常时，整个操作就可能不会继续执行下去，而已经进行的操作造成的副作用就可能造成数据更新的丢失或者错误。</p>
 <p>事务其实和一个操作没有什么太大的区别，它是一系列的数据库操作（可以理解为 SQL）的集合，如果事务不具备原子性，那么就没办法保证同一个事务中的所有操作都被执行或者未被执行了，整个数据库系统就既不可用也不可信。</p>
 <h3 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h3><p>为了满足事务的原子性，所有事务进行的修改都会先记录到undo log中，然后进行数据的修改。如果出现了错误或者用户执行了 ROLLBACK语句，系统可以利用Undo Log中的备份将数据恢复到事务开始之前的状态。undo log实现多版本并发控制（MVCC）来辅助保证事务的隔离性。  </p>
@@ -306,8 +318,10 @@
 </ul>
 <p>CAP 定理中的数据一致性，其实是说分布式系统中的各个节点中对于同一数据的拷贝有着相同的值。</p>
 <p>通过原子性 + 持久性，就能保证数据库的一致性。</p>
-<h2 id="隔离性"><a href="#隔离性" class="headerlink" title="隔离性"></a>隔离性</h2><p>MySQL 通过锁机制来保证事务的隔离性。</p>
-<h3 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h3><p>SQL 标准定义的四种隔离级别被 ANSI（美国国家标准学会）和 ISO/IEC（国际标准）采用，每种级别对事务的处理能力会有不同程度的影响。<br>我们分别对四种隔离级别从并发程度由高到低进行描述，并用代码进行演示，数据库环境为 MySQL 5.7。</p>
+<h2 id="隔离性"><a href="#隔离性" class="headerlink" title="隔离性"></a>隔离性</h2><p>隔离性追求的是并发情形下事务之间互不干扰。那么隔离性的实现主要通过锁实现</p>
+<h3 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select @@global.tx_isolation;</span><br></pre></td></tr></table></figure>
+
+<p>SQL 标准定义的四种隔离级别被 ANSI（美国国家标准学会）和 ISO/IEC（国际标准）采用，每种级别对事务的处理能力会有不同程度的影响。<br>我们分别对四种隔离级别从并发程度由高到低进行描述，并用代码进行演示，数据库环境为 MySQL 5.7。</p>
 <p>还是先给结论各个隔离级别下产生的一些问题:</p>
 <table>
 <thead>
@@ -343,14 +357,14 @@
 <td align="center">不允许出现</td>
 </tr>
 </tbody></table>
-<h4 id="READ-UNCOMMITTED（读未提交）–-脏读"><a href="#READ-UNCOMMITTED（读未提交）–-脏读" class="headerlink" title="READ UNCOMMITTED（读未提交）– 脏读"></a>READ UNCOMMITTED（读未提交）– 脏读</h4><p>该隔离级别的事务会读到其它未提交事务的数据，此现象也称之为<strong>脏读</strong>。</p>
+<h4 id="READ-UNCOMMITTED（读未提交）–-脏读问题"><a href="#READ-UNCOMMITTED（读未提交）–-脏读问题" class="headerlink" title="READ UNCOMMITTED（读未提交）– 脏读问题"></a>READ UNCOMMITTED（读未提交）– 脏读问题</h4><p>该隔离级别的事务会读到其它未提交事务的数据，此现象也称之为<strong>脏读</strong>。</p>
 <ol>
 <li>准备两个终端，在此命名为 mysql 终端 1 和 mysql 终端 2，<br>再准备一张测试表 test，写入一条测试数据并调整隔离级别为 READ UNCOMMITTED，任意一个终端执行即可。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SET @@session.transaction_isolation &#x3D; &#39;READ-UNCOMMITTED&#39;;</span><br><span class="line">create database test;</span><br><span class="line">use test;</span><br><span class="line">create table test(id int primary key);</span><br><span class="line">insert into test(id) values(1);</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 1，开启一个事务，将 ID 为 1 的记录更新为 2。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">update test set id &#x3D; 2 where id &#x3D; 1;</span><br><span class="line">select * from test; -- 此时看到一条ID为2的记录</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 2，开启一个事务后查看表中的数据。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">use test;</span><br><span class="line">begin;</span><br><span class="line">select * from test; -- 此时看到一条 ID 为 2 的记录</span><br></pre></td></tr></table></figure>
 最后一步读取到了 mysql 终端 1 中未提交的事务（没有 commit 提交动作），即产生了<strong>脏读</strong>，<br>大部分业务场景都不允许脏读出现，但是此隔离级别下数据库的并发是最好的。</li>
 </ol>
-<h4 id="READ-COMMITTED（读提交）–-不可重复读问题"><a href="#READ-COMMITTED（读提交）–-不可重复读问题" class="headerlink" title="READ COMMITTED（读提交）– 不可重复读问题"></a>READ COMMITTED（读提交）– 不可重复读问题</h4><p>一个事务可以读取另一个已提交的事务，多次读取会造成不一样的结果，此现象称为不可重复读问题，<br>Oracle 和 SQL Server 的默认隔离级别。</p>
+<h4 id="READ-COMMITTED（读提交）–-不可重复读问题"><a href="#READ-COMMITTED（读提交）–-不可重复读问题" class="headerlink" title="READ COMMITTED（读提交）– 不可重复读问题"></a>READ COMMITTED（读提交）– 不可重复读问题</h4><p>一个事务可以读取另一个已提交的事务，多次读取会造成不一样的结果，此现象称为不可重复读问题。<br>Oracle 和 SQL Server 的默认隔离级别。</p>
 <ol>
 <li>准备两个终端，在此命名为 mysql 终端 1 和 mysql 终端 2，再准备一张测试表 test，写入一条测试数据并调整隔离级别为 READ COMMITTED，任意一个终端执行即可。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SET @@session.transaction_isolation &#x3D; &#39;READ-COMMITTED&#39;;</span><br><span class="line">create database test;</span><br><span class="line">use test;</span><br><span class="line">create table test(id int primary key);</span><br><span class="line">insert into test(id) values(1);</span><br></pre></td></tr></table></figure></li>
 <li>登录 mysql 终端 1，开启Force Log at Commit 一个事务，将 ID 为 1 的记录更新为 2，并确认记录数变更过来。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">begin;</span><br><span class="line">update test set id &#x3D; 2 where id &#x3D; 1;</span><br><span class="line">select * from test; -- 此时看到一条记录为 2</span><br></pre></td></tr></table></figure></li>
@@ -361,7 +375,7 @@
 </li>
 </ol>
 <p>mysql 终端 2 在开启了一个事务之后，在第一次读取 test 表<br>（此时 mysql 终端 1 的事务还未提交）时 ID 为 1，<br>在第二次读取 test 表（此时 mysql 终端 1 的事务已经提交）时 ID 已经变为 2，<br>说明在此隔离级别下已经读取到已提交的事务。</p>
-<h4 id="REPEATABLE-READ（可重复读）–-幻读"><a href="#REPEATABLE-READ（可重复读）–-幻读" class="headerlink" title="REPEATABLE READ（可重复读）– 幻读"></a>REPEATABLE READ（可重复读）– 幻读</h4><p>该隔离级别是 MySQL 默认的隔离级别，在同一个事务里，select 的结果是事务开始时时间点的状态，</p>
+<h4 id="REPEATABLE-READ（可重复读）–-幻读问题"><a href="#REPEATABLE-READ（可重复读）–-幻读问题" class="headerlink" title="REPEATABLE READ（可重复读）– 幻读问题"></a>REPEATABLE READ（可重复读）– 幻读问题</h4><p>该隔离级别是 MySQL 默认的隔离级别，在同一个事务里，select 的结果是事务开始时时间点的状态，</p>
 <p>因此，同样的 select 操作读到的结果会是一致的，但是，会有幻读现象。MySQL 的 InnoDB 引擎可以通过 next-key locks 机制（参考下文”行锁的算法”）来避免幻读。</p>
 <ol>
 <li>准备两个终端，在此命名为 mysql 终端 1 和 mysql 终端 2，准备一张测试表 test 并调整隔离级别为 REPEATABLE READ，任意一个终端执行即可。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SET @@session.transaction_isolation &#x3D; &#39;REPEATABLE-READ&#39;;</span><br><span class="line">create database test;</span><br><span class="line">use test;</span><br><span class="line">create table test(id int primary key,name varchar(20));</span><br></pre></td></tr></table></figure></li>
@@ -384,7 +398,9 @@
 一旦事务提交，msyql 终端 2 会立马返回 ID 为 1 的记录，否则会一直卡住，直到超时，其中超时参数是由 innodb_lock_wait_timeout 控制。  </li>
 </ol>
 <p>由于每条 select 语句都会加锁，所以该隔离级别的数据库并发能力最弱，但是有些资料表明该结论也不一定对，如果感兴趣，您可以自行做个压力测试。</p>
-<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p>InnoDB主要有2种锁：行级锁，意向锁</p>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p>InnoDB主要有2种锁：行级锁，意向锁(表锁)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * from information_schema.innodb_locks; #锁的概况</span><br><span class="line">show engine innodb status; #InnoDB整体状态，其中包括锁的情况</span><br></pre></td></tr></table></figure>
+
 <h4 id="行级锁："><a href="#行级锁：" class="headerlink" title="行级锁："></a>行级锁：</h4><ul>
 <li>共享锁（读锁 S），允许事务读一行数据。事务拿到某一行记录的共享S锁，才可以读取这一行，并阻止别的事务对其添加X锁。共享锁的目的是提高读读并发。<br>可以使用 SQL 语句 <code>select * from tableName where … lock in share mode;</code>手动加 S 锁。</li>
 <li>排它锁（写锁 X），允许事务删除一行数据或者更新一行数据。事务拿到某一行记录的排它X锁，才可以修改或者删除这一行。排他锁的目的是为了保证数据的一致性。<br>可以使用 SQL 语句 <code>select * from tableName where … for update;</code> 手动加 X 锁。</li>
@@ -433,6 +449,8 @@
 </ol>
 <p>参考文章：</p>
 <ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/glossary.html" target="_blank" rel="noopener">MySQL glossary</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-next-key-locking.html" target="_blank" rel="noopener">Phantom Rows</a></li>
 <li><a href="https://juejin.im/post/5d9da89551882509593fe617" target="_blank" rel="noopener">MySQL InnoDB如何保证事务特性</a></li>
 <li><a href="https://draveness.me/mysql-transaction" target="_blank" rel="noopener">深入浅出mysql中事务的实现</a></li>
 <li><a href="https://www.ibm.com/developerworks/cn/opensource/os-mysql-transaction-isolation-levels-and-locks/index.html#1%E8%A1%8C%E9%94%81%E7%9A%84%E7%AE%97%E6%B3%95outline" target="_blank" rel="noopener">MySQL 事务隔离级别和锁</a></li>
@@ -540,7 +558,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-如何保证事务性"><span class="nav-number">1.</span> <span class="nav-text">MySQL 如何保证事务性?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久性与redo-log"><span class="nav-number">2.</span> <span class="nav-text">持久性与redo log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#持久性"><span class="nav-number">2.1.</span> <span class="nav-text">持久性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-log存在的背景"><span class="nav-number">2.2.</span> <span class="nav-text">redo log存在的背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-log"><span class="nav-number">2.3.</span> <span class="nav-text">redo log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子性与undo-log"><span class="nav-number">3.</span> <span class="nav-text">原子性与undo log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-number">3.1.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undo-log"><span class="nav-number">3.2.</span> <span class="nav-text">undo log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性与redo-undo-log"><span class="nav-number">4.</span> <span class="nav-text">一致性与redo+undo log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隔离性"><span class="nav-number">5.</span> <span class="nav-text">隔离性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务的隔离级别"><span class="nav-number">5.1.</span> <span class="nav-text">事务的隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#READ-UNCOMMITTED（读未提交）–-脏读"><span class="nav-number">5.1.1.</span> <span class="nav-text">READ UNCOMMITTED（读未提交）– 脏读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#READ-COMMITTED（读提交）–-不可重复读问题"><span class="nav-number">5.1.2.</span> <span class="nav-text">READ COMMITTED（读提交）– 不可重复读问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#REPEATABLE-READ（可重复读）–-幻读"><span class="nav-number">5.1.3.</span> <span class="nav-text">REPEATABLE READ（可重复读）– 幻读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SERIALIZABLE（串行化）"><span class="nav-number">5.1.4.</span> <span class="nav-text">SERIALIZABLE（串行化）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">5.2.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#行级锁："><span class="nav-number">5.2.1.</span> <span class="nav-text">行级锁：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#意向锁："><span class="nav-number">5.2.2.</span> <span class="nav-text">意向锁：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁的算法"><span class="nav-number">5.2.3.</span> <span class="nav-text">锁的算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#死锁"><span class="nav-number">5.2.4.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁的优化建议"><span class="nav-number">5.2.5.</span> <span class="nav-text">锁的优化建议</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-如何保证事务性"><span class="nav-number">1.</span> <span class="nav-text">MySQL 如何保证事务性?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久性与redo-log"><span class="nav-number">2.</span> <span class="nav-text">持久性与redo log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#持久性"><span class="nav-number">2.1.</span> <span class="nav-text">持久性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-log存在的背景"><span class="nav-number">2.2.</span> <span class="nav-text">redo log存在的背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-log"><span class="nav-number">2.3.</span> <span class="nav-text">redo log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redo-log-与-bin-log"><span class="nav-number">2.4.</span> <span class="nav-text">redo log 与 bin log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子性与undo-log"><span class="nav-number">3.</span> <span class="nav-text">原子性与undo log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-number">3.1.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undo-log"><span class="nav-number">3.2.</span> <span class="nav-text">undo log</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性与redo-undo-log"><span class="nav-number">4.</span> <span class="nav-text">一致性与redo+undo log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隔离性"><span class="nav-number">5.</span> <span class="nav-text">隔离性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务的隔离级别"><span class="nav-number">5.1.</span> <span class="nav-text">事务的隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#READ-UNCOMMITTED（读未提交）–-脏读问题"><span class="nav-number">5.1.1.</span> <span class="nav-text">READ UNCOMMITTED（读未提交）– 脏读问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#READ-COMMITTED（读提交）–-不可重复读问题"><span class="nav-number">5.1.2.</span> <span class="nav-text">READ COMMITTED（读提交）– 不可重复读问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#REPEATABLE-READ（可重复读）–-幻读问题"><span class="nav-number">5.1.3.</span> <span class="nav-text">REPEATABLE READ（可重复读）– 幻读问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SERIALIZABLE（串行化）"><span class="nav-number">5.1.4.</span> <span class="nav-text">SERIALIZABLE（串行化）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁"><span class="nav-number">5.2.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#行级锁："><span class="nav-number">5.2.1.</span> <span class="nav-text">行级锁：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#意向锁："><span class="nav-number">5.2.2.</span> <span class="nav-text">意向锁：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁的算法"><span class="nav-number">5.2.3.</span> <span class="nav-text">锁的算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#死锁"><span class="nav-number">5.2.4.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锁的优化建议"><span class="nav-number">5.2.5.</span> <span class="nav-text">锁的优化建议</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

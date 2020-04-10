@@ -29,7 +29,7 @@
 <meta property="og:description" content="生产环境使用Kong做API网关，部署在GKE，为了提高可用性，做了以下优化，实现0宕机升级:  使用反亲和性部署到不同k8s节点上; 避免单节点问题造成宕机，同时充分利用node的资源 健康检查; 节点出问题, 及时重启调度 滚动升级; RollingUpdate pod处理完请求再关闭; 调用k8s节点的生命周期函数。pre-stop时候 nignx -s quit 命令，处理完请求再关闭节点">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-08T06:45:12.000Z">
-<meta property="article:modified_time" content="2020-04-08T08:00:43.483Z">
+<meta property="article:modified_time" content="2020-04-09T02:32:08.997Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="k8s">
 <meta property="article:tag" content="api gateway">
@@ -207,10 +207,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-04-08 14:45:12 / Modified: 16:00:43" itemprop="dateCreated datePublished" datetime="2020-04-08T14:45:12+08:00">2020-04-08</time>
+              <time title="Created: 2020-04-08 14:45:12" itemprop="dateCreated datePublished" datetime="2020-04-08T14:45:12+08:00">2020-04-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-09 10:32:08" itemprop="dateModified" datetime="2020-04-09T10:32:08+08:00">2020-04-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
