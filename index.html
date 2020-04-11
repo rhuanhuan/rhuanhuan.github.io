@@ -788,6 +788,157 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/distributed-transaction-seata-demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/distributed-transaction-seata-demo/" class="post-title-link" itemprop="url">Seata AT模式demo</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-19 21:21:12" itemprop="dateCreated datePublished" datetime="2020-03-19T21:21:12+08:00">2020-03-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-11 17:12:36" itemprop="dateModified" datetime="2020-04-11T17:12:36+08:00">2020-04-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Distributed-System/" itemprop="url" rel="index"><span itemprop="name">Distributed System</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Distributed-System/Transaction/" itemprop="url" rel="index"><span itemprop="name">Transaction</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>前面已有<a href="https://rhuanhuan.github.io/mysql-transaction/" target="_blank" rel="noopener">文章</a>介绍过事务性以及在MYSQL中如何解决事务性问题。那么如果到了分布式系统中呢？尤其是在当前微服务盛行的场景下？</p>
+<p>本文主要实现一个Seata的AT模式的demo, <a href="https://github.com/rhuanhuan/distribute-transaction-demo" target="_blank" rel="noopener">代码库地址</a>。</p>
+<h2 id="Seata-分布式事务-AT模式-demo"><a href="#Seata-分布式事务-AT模式-demo" class="headerlink" title="Seata 分布式事务 AT模式 demo"></a>Seata 分布式事务 AT模式 demo</h2><h4 id="场景-跨行转账"><a href="#场景-跨行转账" class="headerlink" title="场景: 跨行转账"></a>场景: 跨行转账</h4><p>两个账户在不同的银行(张三在bank1、李四在bank2)，bank1和bank2是两个个微服务。<br>交易过程是，张三 给李四转账指定金额。    </p>
+<p>交互流程如下: </p>
+<ol>
+<li>请求bank1进行转账，传入转账金额。 </li>
+<li>bank1减少转账金额，调用bank2，传入转账金额, bank2添加转账金额。</li>
+</ol>
+<h4 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h4><ul>
+<li>数据库: MySQL 5.7。bank 1 和bank 2</li>
+<li>JDK 1.8 +</li>
+<li>微服务框架: spring-boot, spring-cloud, Eureka注册中心</li>
+<li>分布式事务: seata<ul>
+<li>RM, TM: spring-cloud-alibaba-seata </li>
+<li>TC: seata-server, 单独部署</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h4><h5 id="1-创建数据库"><a href="#1-创建数据库" class="headerlink" title="1. 创建数据库"></a>1. 创建数据库</h5><p><code>bank1</code>库 &amp; <code>bank2</code>库 </p>
+<ul>
+<li><code>account_info</code>表，<code>bank1</code>包含’张三’账户，<code>bank2</code>包含’李四’账户</li>
+<li><code>undo_log</code>表，为seata框架使用<br>参考本工程<code>sql</code>目录</li>
+</ul>
+<h5 id="2-启动TC-Transaction-Coordinator"><a href="#2-启动TC-Transaction-Coordinator" class="headerlink" title="2. 启动TC(Transaction Coordinator)"></a>2. 启动TC(Transaction Coordinator)</h5><p>下载：<a href="https://github.com/seata/seata/releases/" target="_blank" rel="noopener">https://github.com/seata/seata/releases/</a><br>启动：<code>${SEATA_PATH}/bin/seata-server.sh -p 8888 -m file</code>。8888为服务端口号;file为启动模式，这里指seata服务将采用文件的方式存储信息。出现<code>Server started...</code>的字样则表示启动成功。</p>
+<h5 id="3-启动服务注册中心"><a href="#3-启动服务注册中心" class="headerlink" title="3. 启动服务注册中心"></a>3. 启动服务注册中心</h5><p>基于Eureka实现注册中心。</p>
+<h5 id="4-业务工程配置seata"><a href="#4-业务工程配置seata" class="headerlink" title="4. 业务工程配置seata"></a>4. 业务工程配置seata</h5><p>在<code>src/main/resource</code>中，新增两个文件。</p>
+<ul>
+<li><code>registry.conf</code></li>
+<li><code>file.conf</code>  </li>
+</ul>
+<p>内容可以copy上面TC server下面的<code>config</code>目录的文件，然后：  </p>
+<ul>
+<li>在<code>registry.conf</code>中<code>registry.type</code>使用<code>file</code></li>
+<li>在<code>file.conf</code>中，<ul>
+<li><code>service.vgroup_mapping.[springcloud服务名]-fescar-service-group = [Seata Server集群名称]</code>，Seata Server集群默认名称为default  </li>
+<li><code>service.default.grouplist =[seata服务端地址]</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="5-创建代理数据源"><a href="#5-创建代理数据源" class="headerlink" title="5. 创建代理数据源"></a>5. 创建代理数据源</h5><p>Seata的RM通过<code>DataSourceProxy</code>才能在业务代码的事务提交时，通过这个切入点，与TC进行通信交互、记录undo_log等。<br>添加<code>DatabaseConfiguration.java</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DatabaseConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DatabaseConfiguration</span><span class="params">(ApplicationContext applicationContext)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"spring.datasource.ds0"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> DruidDataSource <span class="title">ds0</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        DruidDataSource druidDataSource = <span class="keyword">new</span> DruidDataSource();</span><br><span class="line">        <span class="keyword">return</span> druidDataSource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">dataSource</span><span class="params">(DruidDataSource ds0)</span>  </span>&#123;</span><br><span class="line">        DataSourceProxy pds0 = <span class="keyword">new</span> DataSourceProxy(ds0);</span><br><span class="line">        <span class="keyword">return</span> pds0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h4><ol>
+<li>全局事务开始使用 @GlobalTransactional标识 。 </li>
+<li>每个本地事务方案仍然使用@Transactional标识。 </li>
+<li>每个数据都需要创建undo_log表，此表是seata保证本地事务一致性的关键。</li>
+</ol>
+<p><code>@GlobalTransactional</code>注解标注在全局事务发起的Service实现方法上，开启全局事务: </p>
+<ul>
+<li><code>GlobalTransactionalInterceptor</code>会拦截<code>@GlobalTransactional</code>注解的方法，生成全局事务ID(XID)，XID会在整个<br>分布式事务中传递。 </li>
+<li>在远程调用时，<code>spring-cloud-alibaba-seata</code>会拦截<code>Feign</code>调用将XID传递到下游服务。</li>
+</ul>
+<ol>
+<li>提交流程<br><img src="./img/at-commit.png" alt="提交流程">  </li>
+<li>回滚流程<br><img src="./img/at-rollback.png" alt="回滚流程">  </li>
+</ol>
+<p>tips:</p>
+<ol>
+<li>每个RM使用<code>DataSourceProxy</code>连接数据库，其目的是使用<code>ConnectionProxy</code>，使用数据源和数据连接代理的目的就是在第一阶段将<code>undo_log</code>和业务数据放在一个本地事务提交，这样就保存了只要有业务操作就一定有<code>undo_log</code>。</li>
+<li>在第一阶段<code>undo_log</code>中存放了数据修改前和修改后的值，为事务回滚作好准备，所以第一阶段完成就已经将分支事务提交，也就释放了锁资源。</li>
+<li>TM开启全局事务开始，将<code>XID</code>全局事务id放在事务上下文中，通过feign调用也将<code>XID</code>传入下游分支事务，每个 分支事务将自己的<code>Branch ID</code>分支事务ID与<code>XID</code>关联。</li>
+<li>第二阶段全局事务提交，TC会通知各各分支参与者提交分支事务，在第一阶段就已经提交了分支事务，这里各 各参与者只需要删除<code>undo_log</code>即可，并且可以异步执行，第二阶段很快可以完成。</li>
+<li>第二阶段全局事务回滚，TC会通知各各分支参与者回滚分支事务，通过 XID 和 Branch ID 找到相应的回滚日 志，通过回滚日志生成反向的 SQL 并执行，以完成分支事务回滚到之前的状态，如果回滚失败则会重试回滚操 作。</li>
+</ol>
+<h4 id="测试场景"><a href="#测试场景" class="headerlink" title="测试场景"></a>测试场景</h4><ul>
+<li>张三向李四转账成功。</li>
+<li>李四事务失败，张三事务回滚成功。</li>
+<li>张三事务失败，李四事务回滚成功。</li>
+<li>分支事务超时测试。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/build-k8s-operator-with-kubebuild-demo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1202,20 +1353,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
