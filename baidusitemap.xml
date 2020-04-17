@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://yoursite.com/inception-101/</loc>
+    <loc>https://rhuanhuan.github.io/inception-101/</loc>
     <lastmod>2020-04-17</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/distributed-transaction-seata-demo/</loc>
+    <loc>https://rhuanhuan.github.io/distributed-transaction-seata-demo/</loc>
     <lastmod>2020-04-11</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/java-zgc/</loc>
+    <loc>https://rhuanhuan.github.io/java-zgc/</loc>
     <lastmod>2020-04-11</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/mysql-transaction/</loc>
+    <loc>https://rhuanhuan.github.io/mysql-transaction/</loc>
     <lastmod>2020-04-11</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/high-available-kong-nginx-deploy-in-k8s/</loc>
+    <loc>https://rhuanhuan.github.io/high-available-kong-nginx-deploy-in-k8s/</loc>
     <lastmod>2020-04-09</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/java-4-kind-of-references/</loc>
+    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
     <lastmod>2020-04-07</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/java9-String-use-byte-not-char/</loc>
+    <loc>https://rhuanhuan.github.io/java9-String-use-byte-not-char/</loc>
     <lastmod>2020-03-22</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/build-k8s-operator-with-kubebuild-demo/</loc>
+    <loc>https://rhuanhuan.github.io/build-k8s-operator-with-kubebuild-demo/</loc>
     <lastmod>2020-03-15</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/how-to-create-blog-in-github/</loc>
+    <loc>https://rhuanhuan.github.io/how-to-create-blog-in-github/</loc>
     <lastmod>2020-03-07</lastmod>
   </url>  <url>
-    <loc>http://yoursite.com/my-github-blog-start/</loc>
+    <loc>https://rhuanhuan.github.io/my-github-blog-start/</loc>
     <lastmod>2020-03-07</lastmod>
   </url>
 </urlset>
