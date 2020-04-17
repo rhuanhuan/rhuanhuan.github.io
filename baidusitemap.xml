@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://yoursite.com/inception-101/</loc>
+    <lastmod>2020-04-17</lastmod>
+  </url>  <url>
     <loc>http://yoursite.com/distributed-transaction-seata-demo/</loc>
+    <lastmod>2020-04-11</lastmod>
+  </url>  <url>
+    <loc>http://yoursite.com/java-zgc/</loc>
     <lastmod>2020-04-11</lastmod>
   </url>  <url>
     <loc>http://yoursite.com/mysql-transaction/</loc>
