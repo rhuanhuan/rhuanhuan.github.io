@@ -21,23 +21,21 @@
     var CONFIG = {"hostname":"rhuanhuan.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="什么是ZGC? ZGC相对其他GC的优点是什么? ZGC的原理细节？">
+  <meta name="description" content="步骤只需要follow以下几步：  fork 想要贡献的项目repository。原项目一般称之为’original repository’ 或者 ‘upstream repository’; 这个只需要到原项目点一下就行 本地clone 自己fork的代码库 给本地clone的项目添加upstream。记得任何时候及时同步(sync)自己的fork 与 upstream repository 编">
 <meta property="og:type" content="article">
-<meta property="og:title" content="java zgc">
-<meta property="og:url" content="https://rhuanhuan.github.io/java-zgc/">
+<meta property="og:title" content="如何给开源项目提交代码">
+<meta property="og:url" content="https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/">
 <meta property="og:site_name" content="Huan Space">
-<meta property="og:description" content="什么是ZGC? ZGC相对其他GC的优点是什么? ZGC的原理细节？">
+<meta property="og:description" content="步骤只需要follow以下几步：  fork 想要贡献的项目repository。原项目一般称之为’original repository’ 或者 ‘upstream repository’; 这个只需要到原项目点一下就行 本地clone 自己fork的代码库 给本地clone的项目添加upstream。记得任何时候及时同步(sync)自己的fork 与 upstream repository 编">
 <meta property="og:locale" content="zh">
-<meta property="article:published_time" content="2020-04-03T15:21:16.000Z">
-<meta property="article:modified_time" content="2020-04-21T15:58:12.506Z">
+<meta property="article:published_time" content="2020-04-22T13:18:46.000Z">
+<meta property="article:modified_time" content="2020-04-22T13:56:22.298Z">
 <meta property="article:author" content="Huan Ruan">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="jvm">
-<meta property="article:tag" content="gc">
-<meta property="article:tag" content="zgc">
+<meta property="article:tag" content="Technical">
+<meta property="article:tag" content="git">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://rhuanhuan.github.io/java-zgc/">
+<link rel="canonical" href="https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/">
 
 
 <script id="page-configurations">
@@ -49,7 +47,7 @@
   };
 </script>
 
-  <title>java zgc | Huan Space</title>
+  <title>如何给开源项目提交代码 | Huan Space</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-159926406-1"></script>
     <script>
@@ -185,7 +183,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/java-zgc/">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -198,7 +196,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          java zgc
+          如何给开源项目提交代码
         </h2>
 
         <div class="post-meta">
@@ -207,32 +205,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-04-03 23:21:16" itemprop="dateCreated datePublished" datetime="2020-04-03T23:21:16+08:00">2020-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-21 23:58:12" itemprop="dateModified" datetime="2020-04-21T23:58:12+08:00">2020-04-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
+              <time title="Created: 2020-04-22 21:18:46 / Modified: 21:56:22" itemprop="dateCreated datePublished" datetime="2020-04-22T21:18:46+08:00">2020-04-22</time>
             </span>
 
           
@@ -246,9 +221,43 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>什么是ZGC?</p>
-<p>ZGC相对其他GC的优点是什么?</p>
-<p>ZGC的原理细节？</p>
+        <h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><p>只需要follow以下几步：</p>
+<ol>
+<li>fork 想要贡献的项目repository。<br>原项目一般称之为’original repository’ 或者 ‘upstream repository’; 这个只需要到原项目点一下就行</li>
+<li>本地clone 自己fork的代码库</li>
+<li>给本地clone的项目添加upstream。记得任何时候及时同步(sync)自己的fork 与 upstream repository</li>
+<li>编辑时候，到自己的fork repository 编辑</li>
+<li>同步upstream repository 并提交</li>
+<li>去自己的github 的fork repository上，给upstream repository提交pr</li>
+</ol>
+<p>这里涉及的其实主要的就是github的fork功能。</p>
+<h3 id="什么是github-fork"><a href="#什么是github-fork" class="headerlink" title="什么是github fork?"></a>什么是github fork?</h3><p>经常用于github的开源项目开发的一个特性。类似于copy代码，不过提供了两个功能:</p>
+<ol>
+<li>提交pr: 你可以使用pr，来从你自己的fork向original(upstream) repository 提交修改申请</li>
+<li>同步最新代码: 你可以把upstream repository的更新同步到你自己的fork上，来保持与开源项目的同步</li>
+</ol>
+<h3 id="如何使用fork"><a href="#如何使用fork" class="headerlink" title="如何使用fork?"></a>如何使用fork?</h3><h4 id="1-fork代码，本地clone并添加upstream"><a href="#1-fork代码，本地clone并添加upstream" class="headerlink" title="1. fork代码，本地clone并添加upstream"></a>1. fork代码，本地clone并添加upstream</h4><ol>
+<li>fork代码去original repository 点两下;</li>
+<li>本地<code>git clone ${FORK-REPOSITORY}</code></li>
+<li>进入项目目录查看本地remote。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git remote -v</span><br><span class="line">&gt; origin  https:&#x2F;&#x2F;github.com&#x2F;YOUR_USERNAME&#x2F;YOUR_FORK.git (fetch)</span><br><span class="line">&gt; origin  https:&#x2F;&#x2F;github.com&#x2F;YOUR_USERNAME&#x2F;YOUR_FORK.git (push)</span><br></pre></td></tr></table></figure></li>
+<li>添加upstream，并查看<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git remote add upstream https:&#x2F;&#x2F;github.com&#x2F;ORIGINAL_OWNER&#x2F;ORIGINAL_REPOSITORY.git</span><br><span class="line"></span><br><span class="line">$ git remote -v</span><br><span class="line">&gt; origin    https:&#x2F;&#x2F;github.com&#x2F;YOUR_USERNAME&#x2F;YOUR_FORK.git (fetch)</span><br><span class="line">&gt; origin    https:&#x2F;&#x2F;github.com&#x2F;YOUR_USERNAME&#x2F;YOUR_FORK.git (push)</span><br><span class="line">&gt; upstream  https:&#x2F;&#x2F;github.com&#x2F;ORIGINAL_OWNER&#x2F;ORIGINAL_REPOSITORY.git (fetch)</span><br><span class="line">&gt; upstream  https:&#x2F;&#x2F;github.com&#x2F;ORIGINAL_OWNER&#x2F;ORIGINAL_REPOSITORY.git (push)</span><br></pre></td></tr></table></figure>
+<h4 id="2-fork仓库与upstream-同步"><a href="#2-fork仓库与upstream-同步" class="headerlink" title="2. fork仓库与upstream 同步"></a>2. fork仓库与upstream 同步</h4></li>
+<li>从upstream repository 拉代码<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git fetch upstream</span><br><span class="line">&gt; remote: Counting objects: 75, done.</span><br><span class="line">&gt; remote: Compressing objects: 100% (53&#x2F;53), done.</span><br><span class="line">&gt; remote: Total 62 (delta 27), reused 44 (delta 9)</span><br><span class="line">&gt; Unpacking objects: 100% (62&#x2F;62), done.</span><br><span class="line">&gt; From https:&#x2F;&#x2F;github.com&#x2F;ORIGINAL_OWNER&#x2F;ORIGINAL_REPOSITORY</span><br><span class="line">&gt;  * [new branch]      master     -&gt; upstream&#x2F;master</span><br></pre></td></tr></table></figure></li>
+<li>切换到本地分支, 并同步最新upstream代码<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master</span><br><span class="line">&gt; Switched to branch &#39;master&#39;</span><br><span class="line"></span><br><span class="line">$ git merge upstream&#x2F;master</span><br><span class="line">&gt; Updating a422352..5fdff0f</span><br><span class="line">&gt; Fast-forward</span><br><span class="line">&gt;  README                    |    9 -------</span><br><span class="line">&gt;  README.md                 |    7 ++++++</span><br><span class="line">&gt;  2 files changed, 7 insertions(+), 9 deletions(-)</span><br><span class="line">&gt;  delete mode 100644 README</span><br><span class="line">&gt;  create mode 100644 README.md</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="3-修改代码，再次同步，并提交pr"><a href="#3-修改代码，再次同步，并提交pr" class="headerlink" title="3. 修改代码，再次同步，并提交pr"></a>3. 修改代码，再次同步，并提交pr</h4><ol>
+<li>在自己的fork修改代码并提交<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add ...</span><br><span class="line">git commit -m &#39;....&#39;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure></li>
+<li>同步代码</li>
+<li>去自己的fork repository里面提交pr</li>
+</ol>
+<p>参考资料:</p>
+<ol>
+<li><a href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks" target="_blank" rel="noopener">fork官方文档</a></li>
+<li><a href="https://opensource.guide/zh-hans/how-to-contribute/" target="_blank" rel="noopener">opensource guide</a></li>
+<li><a href="https://guides.github.com/introduction/flow/" target="_blank" rel="noopener">github flow</a></li>
+</ol>
 
     </div>
 
@@ -264,7 +273,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://rhuanhuan.github.io/java-zgc/" title="java zgc">https://rhuanhuan.github.io/java-zgc/</a>
+    <a href="https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/" title="如何给开源项目提交代码">https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> unless stating additionally.
@@ -275,10 +284,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/java/" rel="tag"># java</a>
-              <a href="/tags/jvm/" rel="tag"># jvm</a>
-              <a href="/tags/gc/" rel="tag"># gc</a>
-              <a href="/tags/zgc/" rel="tag"># zgc</a>
+              <a href="/tags/Technical/" rel="tag"># Technical</a>
+              <a href="/tags/git/" rel="tag"># git</a>
           </div>
 
         
@@ -287,13 +294,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/mysql-transaction/" rel="prev" title="MySQL的InnoDB如何实现事务性">
-      <i class="fa fa-chevron-left"></i> MySQL的InnoDB如何实现事务性
+    <a href="/inception-101/" rel="prev" title="如何快速启动一个项目 -- inception 方法论简介">
+      <i class="fa fa-chevron-left"></i> 如何快速启动一个项目 -- inception 方法论简介
     </a></div>
-      <div class="post-nav-item">
-    <a href="/java-4-kind-of-references/" rel="next" title="Java中的四种引用类型">
-      Java中的四种引用类型 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -354,6 +358,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">1.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是github-fork"><span class="nav-number">2.</span> <span class="nav-text">什么是github fork?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用fork"><span class="nav-number">3.</span> <span class="nav-text">如何使用fork?</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-fork代码，本地clone并添加upstream"><span class="nav-number">3.1.</span> <span class="nav-text">1. fork代码，本地clone并添加upstream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-fork仓库与upstream-同步"><span class="nav-number">3.2.</span> <span class="nav-text">2. fork仓库与upstream 同步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-修改代码，再次同步，并提交pr"><span class="nav-number">3.3.</span> <span class="nav-text">3. 修改代码，再次同步，并提交pr</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -493,7 +498,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'blogComment',
       owner       : 'rhuanhuan',
       admin       : ['rhuanhuan'],
-      id          : '6cd4cb2c0c9d3dbd7ed81a951413d40a',
+      id          : '8c17a9c41f2b23565251f93e58bd1ef8',
         language: '',
       distractionFreeMode: true
     });

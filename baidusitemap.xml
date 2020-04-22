@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/</loc>
+    <lastmod>2020-04-22</lastmod>
+  </url>  <url>
+    <loc>https://rhuanhuan.github.io/java-zgc/</loc>
+    <lastmod>2020-04-21</lastmod>
+  </url>  <url>
     <loc>https://rhuanhuan.github.io/inception-101/</loc>
     <lastmod>2020-04-17</lastmod>
   </url>  <url>
     <loc>https://rhuanhuan.github.io/distributed-transaction-seata-demo/</loc>
-    <lastmod>2020-04-11</lastmod>
-  </url>  <url>
-    <loc>https://rhuanhuan.github.io/java-zgc/</loc>
     <lastmod>2020-04-11</lastmod>
   </url>  <url>
     <loc>https://rhuanhuan.github.io/mysql-transaction/</loc>
