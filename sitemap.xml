@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rhuanhuan.github.io/how-to-create-blog-in-github/</loc>
+    
+    <lastmod>2020-04-23T14:35:40.646Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/</loc>
     
     <lastmod>2020-04-22T13:56:22.298Z</lastmod>
@@ -61,13 +68,6 @@
     <loc>https://rhuanhuan.github.io/build-k8s-operator-with-kubebuild-demo/</loc>
     
     <lastmod>2020-03-15T08:30:58.528Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/how-to-create-blog-in-github/</loc>
-    
-    <lastmod>2020-03-07T14:14:36.979Z</lastmod>
     
   </url>
   

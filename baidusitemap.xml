@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://rhuanhuan.github.io/how-to-create-blog-in-github/</loc>
+    <lastmod>2020-04-23</lastmod>
+  </url>  <url>
     <loc>https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/</loc>
     <lastmod>2020-04-22</lastmod>
   </url>  <url>
@@ -27,9 +30,6 @@
   </url>  <url>
     <loc>https://rhuanhuan.github.io/build-k8s-operator-with-kubebuild-demo/</loc>
     <lastmod>2020-03-15</lastmod>
-  </url>  <url>
-    <loc>https://rhuanhuan.github.io/how-to-create-blog-in-github/</loc>
-    <lastmod>2020-03-07</lastmod>
   </url>  <url>
     <loc>https://rhuanhuan.github.io/my-github-blog-start/</loc>
     <lastmod>2020-03-07</lastmod>
