@@ -180,6 +180,104 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/consistent-hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/consistent-hash/" class="post-title-link" itemprop="url">一致性哈希算法介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-26 22:49:12" itemprop="dateCreated datePublished" datetime="2020-04-26T22:49:12+08:00">2020-04-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-27 00:04:09" itemprop="dateModified" datetime="2020-04-27T00:04:09+08:00">2020-04-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Distributed-System/" itemprop="url" rel="index"><span itemprop="name">Distributed System</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="什么是一致性哈希算法？"><a href="#什么是一致性哈希算法？" class="headerlink" title="什么是一致性哈希算法？"></a>什么是一致性哈希算法？</h3><p>一种特殊的hash算法，主要解决了简单哈希算法在分布式哈希表( Distributed Hash Table，DHT) 中存在的动态伸缩等问题。<br>一致性hash的使用在分布式系统的比较常见，比如分布式存储，分布式计算等等（多队列多任务）</p>
+<h3 id="为什么要用一致性哈希算法？"><a href="#为什么要用一致性哈希算法？" class="headerlink" title="为什么要用一致性哈希算法？"></a>为什么要用一致性哈希算法？</h3><p>以缓存集群为例，为了提高缓存的吞吐量，我们通常会把缓存求hash然后分配到不同的节点上。<br>我们要分配节点第一想到的办法就是<strong>取模</strong>。即现在有3个节点，假设资源key=7,7%3=1，则选择Node1，key=3，3%3=0，则选择Node0。<br>这种方法虽然简单，但有个缺点，如果节点数增加或减少，就会有大量的key不命中，请求会直接到达数据库（击穿）。</p>
+<p>类似的场景还有rpc服务的负载均衡。为了解决这种问题，<strong>让节点数量变化时候，只会引起很少部分的key不会命中，于是有了一致性hash算法。</strong></p>
+<h3 id="逻辑"><a href="#逻辑" class="headerlink" title="逻辑"></a>逻辑</h3><h4 id="原理解析"><a href="#原理解析" class="headerlink" title="原理解析"></a>原理解析</h4><p>前面提到，取余算法会有大量的key不命中，那么如何减少不命中的key呢？  </p>
+<p><strong>其实原理很简单，就是分区域</strong>。<br>首先，hash值作为一个整型，会落在 0 ~ 2^32 -1 的范围内。<br>如果我有4个节点，那么把hash值划分为4个区域，<code>0 ~ 2^30 -1</code>，<code>2^30 ~ 2^31 -1</code>，<code>2^31 ~ 3 * 2^30 -1</code>，<code>3 * 2^30 ~ 2^32 -1</code>  </p>
+<ul>
+<li>当我再有一个新节点加入时候，只需要把其中任何一截拆成两小区域，那么就只有其中一小区域的key无法命中。</li>
+<li>当我任何一个节点被移除（或者宕机），只需要把相邻的两个区域合并，那么就只有其中一个区域的key无法命中。</li>
+</ul>
+<p>有很多相关文章具体表现上通常喜欢用环来表示，会更容易理解。</p>
+<p><strong>如果直接上面这样分段的话，新的一小段只有旧的一般，如何让分段更加的均匀呢？</strong><br><strong>另外如果总是相邻节点宕机，会不会让一个节点的负载变的很大？</strong><br>具体实现上，通常会采用虚拟节点的办法。</p>
+<h4 id="虚拟节点"><a href="#虚拟节点" class="headerlink" title="虚拟节点"></a>虚拟节点</h4><p>承上，虚拟节点主要想做的，是让各个节点分配的资源尽量均匀。<br>因此通常会把一个节点映射成多个虚拟节点:</p>
+<ul>
+<li>加入单个新节点时候，也会被映射成多个节点，因此分段更均匀，移除时候也更均匀</li>
+<li>避免分配时候，由于hash算法，或者分段规则等原因，导致各个节点之间分配的区域大小差别很大</li>
+</ul>
+<p>一般如果节点数越少，每个节点对应的虚拟节点数就越多。</p>
+<p>参考资料:</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzI2MTk1NDY0Mw==&mid=2247483768&idx=1&sn=fee0eda48ea283de79d787387ae5d89e&chksm=ea53cc44dd24455248ce8ce49aefa2d707b61041a221322dcba86bdeeb4295f0c61be2c40f70&scene=21#wechat_redirect" target="_blank" rel="noopener">一致性哈希算法，在分布式开发中你必须会写，来看完整代</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1476,96 +1574,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/how-to-create-blog-in-github/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Huan Ruan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Huan Space">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/how-to-create-blog-in-github/" class="post-title-link" itemprop="url">博客功能和依赖</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-07 20:39:50" itemprop="dateCreated datePublished" datetime="2020-03-07T20:39:50+08:00">2020-03-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-23 22:35:40" itemprop="dateModified" datetime="2020-04-23T22:35:40+08:00">2020-04-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/%E5%B7%A5%E5%85%B7%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">工具教程</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本搭建过程基于MacOS，具体搭建方法网上资源已经很多了，但是有些已经过时。建议还是直接查看官方文档，因此这里只列出功能使用时候用到了哪些工具，基本照着别人的quick start来一下就成。  </p>
-<h2 id="功能和工具"><a href="#功能和工具" class="headerlink" title="功能和工具"></a>功能和工具</h2><ul>
-<li>静态资源服务器和域名: <a href="https://pages.github.com/" target="_blank" rel="noopener">github page</a></li>
-<li>静态博客资源: <a href="https://github.com/hexojs/hexo" target="_blank" rel="noopener">hexo</a></li>
-<li>博客主题: <a href="https://theme-next.org/docs/" target="_blank" rel="noopener">NexT</a></li>
-<li>博客评价: <a href="https://github.com/gitalk/gitalk" target="_blank" rel="noopener">gitalk</a></li>
-<li>博客访问记录: <a href="https://theme-next.org/docs/third-party-services/statistics-and-analytics#Google-Analytics" target="_blank" rel="noopener">GoogleAnalytics</a>, <a href="https://tongji.baidu.com/web/welcome/basic" target="_blank" rel="noopener">百度统计</a></li>
-<li>图床: github 修改了服务协议，现在直接把图片放在github上了。之前使用<a href="https://www.qiniu.com/products/kodo" target="_blank" rel="noopener">七牛云对象存储</a></li>
-<li>SEO优化: <a href="https://theme-next.org/docs/theme-settings/seo.html" target="_blank" rel="noopener">Next SEO</a>, <a href="https://blog.paddings.cn/2016/08/16/blog/Hexo-NexT-SEO/" target="_blank" rel="noopener">Hexo NexT 主题SEO优化指南</a></li>
-</ul>
-<h2 id="已知问题未解决"><a href="#已知问题未解决" class="headerlink" title="已知问题未解决"></a>已知问题未解决</h2><ul>
-<li>github page把百度封了，因此百度爬虫无法发现</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1636,7 +1644,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1649,7 +1657,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
