@@ -21,15 +21,15 @@
     var CONFIG = {"hostname":"rhuanhuan.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="什么是ZGC? ZGC相对其他GC的优点是什么? ZGC的原理细节？">
+  <meta name="description" content="GC历史  Serial + Serial Old。串行，分代；整个GC都STW。新生代 Parallel Scavenge + Parallel old。并行; 整个GC都STW ParNew + CMS. 图遍历不STW，有浮动垃圾，在堆满之前就要GC G1. 取消整块分代，使用region分治； ZGC. 当前不分代，颜色指针，读屏障；只有标记GC Root时候STW。  什么是ZGC? Z">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java zgc">
 <meta property="og:url" content="https://rhuanhuan.github.io/java-zgc/">
 <meta property="og:site_name" content="Huan Space">
-<meta property="og:description" content="什么是ZGC? ZGC相对其他GC的优点是什么? ZGC的原理细节？">
+<meta property="og:description" content="GC历史  Serial + Serial Old。串行，分代；整个GC都STW。新生代 Parallel Scavenge + Parallel old。并行; 整个GC都STW ParNew + CMS. 图遍历不STW，有浮动垃圾，在堆满之前就要GC G1. 取消整块分代，使用region分治； ZGC. 当前不分代，颜色指针，读屏障；只有标记GC Root时候STW。  什么是ZGC? Z">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-03T15:21:16.000Z">
-<meta property="article:modified_time" content="2020-04-21T15:58:12.506Z">
+<meta property="article:modified_time" content="2020-05-08T15:50:52.439Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="jvm">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-21 23:58:12" itemprop="dateModified" datetime="2020-04-21T23:58:12+08:00">2020-04-21</time>
+                <time title="Modified: 2020-05-08 23:50:52" itemprop="dateModified" datetime="2020-05-08T23:50:52+08:00">2020-05-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,7 +246,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>什么是ZGC?</p>
+        <p>GC历史</p>
+<ul>
+<li>Serial + Serial Old。串行，分代；整个GC都STW。新生代</li>
+<li>Parallel Scavenge + Parallel old。并行; 整个GC都STW</li>
+<li>ParNew + CMS. 图遍历不STW，有浮动垃圾，在堆满之前就要GC</li>
+<li>G1. 取消整块分代，使用region分治；</li>
+<li>ZGC. 当前不分代，颜色指针，读屏障；只有标记GC Root时候STW。</li>
+</ul>
+<p>什么是ZGC?</p>
 <p>ZGC相对其他GC的优点是什么?</p>
 <p>ZGC的原理细节？</p>
 

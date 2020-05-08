@@ -211,7 +211,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-27 00:04:09" itemprop="dateModified" datetime="2020-04-27T00:04:09+08:00">2020-04-27</time>
+                <time title="Modified: 2020-04-27 00:22:21" itemprop="dateModified" datetime="2020-04-27T00:22:21+08:00">2020-04-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -247,7 +247,12 @@
 <li>当我再有一个新节点加入时候，只需要把其中任何一截拆成两小区域，那么就只有其中一小区域的key无法命中。</li>
 <li>当我任何一个节点被移除（或者宕机），只需要把相邻的两个区域合并，那么就只有其中一个区域的key无法命中。</li>
 </ul>
-<p>有很多相关文章具体表现上通常喜欢用环来表示，会更容易理解。</p>
+<p>有很多相关文章具体表现上通常喜欢用环来表示，表述如下:</p>
+<ol>
+<li>求出服务器（节点）的哈希值，并将其配置到0～232的圆（continuum）上。</li>
+<li>采用同样的方法求出存储数据的键的哈希值，并映射到相同的圆上。</li>
+<li>从数据映射到的位置开始顺时针查找，将数据保存到找到的第一个服务器上。如果超过232仍然找不到服务器，就会保存到第一台服务器上。</li>
+</ol>
 <p><strong>如果直接上面这样分段的话，新的一小段只有旧的一般，如何让分段更加的均匀呢？</strong><br><strong>另外如果总是相邻节点宕机，会不会让一个节点的负载变的很大？</strong><br>具体实现上，通常会采用虚拟节点的办法。</p>
 <h4 id="虚拟节点"><a href="#虚拟节点" class="headerlink" title="虚拟节点"></a>虚拟节点</h4><p>承上，虚拟节点主要想做的，是让各个节点分配的资源尽量均匀。<br>因此通常会把一个节点映射成多个虚拟节点:</p>
 <ul>
@@ -938,7 +943,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-21 23:58:12" itemprop="dateModified" datetime="2020-04-21T23:58:12+08:00">2020-04-21</time>
+                <time title="Modified: 2020-05-08 23:50:52" itemprop="dateModified" datetime="2020-05-08T23:50:52+08:00">2020-05-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -969,7 +974,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>什么是ZGC?</p>
+          <p>GC历史</p>
+<ul>
+<li>Serial + Serial Old。串行，分代；整个GC都STW。新生代</li>
+<li>Parallel Scavenge + Parallel old。并行; 整个GC都STW</li>
+<li>ParNew + CMS. 图遍历不STW，有浮动垃圾，在堆满之前就要GC</li>
+<li>G1. 取消整块分代，使用region分治；</li>
+<li>ZGC. 当前不分代，颜色指针，读屏障；只有标记GC Root时候STW。</li>
+</ul>
+<p>什么是ZGC?</p>
 <p>ZGC相对其他GC的优点是什么?</p>
 <p>ZGC的原理细节？</p>
 
