@@ -926,7 +926,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/java-zgc/" class="post-title-link" itemprop="url">java zgc</a>
+            <a href="/java-zgc/" class="post-title-link" itemprop="url">Java gc综述</a>
         </h2>
 
         <div class="post-meta">
@@ -943,7 +943,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-08 23:50:52" itemprop="dateModified" datetime="2020-05-08T23:50:52+08:00">2020-05-08</time>
+                <time title="Modified: 2020-05-09 01:20:57" itemprop="dateModified" datetime="2020-05-09T01:20:57+08:00">2020-05-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -974,17 +974,62 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>GC历史</p>
+          <p>GC 主要是对Java堆内存进行空间回收。</p>
+<p>GC基础方法</p>
 <ul>
-<li>Serial + Serial Old。串行，分代；整个GC都STW。新生代</li>
-<li>Parallel Scavenge + Parallel old。并行; 整个GC都STW</li>
-<li>ParNew + CMS. 图遍历不STW，有浮动垃圾，在堆满之前就要GC</li>
-<li>G1. 取消整块分代，使用region分治；</li>
-<li>ZGC. 当前不分代，颜色指针，读屏障；只有标记GC Root时候STW。</li>
+<li>引用计数法</li>
+<li>可达性分析</li>
 </ul>
-<p>什么是ZGC?</p>
-<p>ZGC相对其他GC的优点是什么?</p>
-<p>ZGC的原理细节？</p>
+<p>基础理论</p>
+<ul>
+<li>分代收集理论</li>
+<li>标记-清除</li>
+<li>标记-复制</li>
+<li>标记-整理 </li>
+</ul>
+<p>GC历史</p>
+<ul>
+<li>Serial + Serial Old<ul>
+<li>整个GC都STW。</li>
+<li>单线程，串行</li>
+<li>分代：新生代标记-复制；老年代标记整理</li>
+</ul>
+</li>
+<li>Parallel Scavenge + Parallel old。<ul>
+<li>整个GC都STW</li>
+<li>关注点在吞吐量</li>
+<li>并行;</li>
+<li>分代：新生代标记-复制；老年代标记整理 </li>
+</ul>
+</li>
+<li>ParNew + CMS. <ul>
+<li>Reference图遍历阶段（并发标记）、与标记完的清理（并发清理）不STW</li>
+<li>有浮动垃圾，在堆满之前就要GC（默认92%）</li>
+<li>CMS失败（垃圾收集过程中堆就满了）会使用Serial Old作为预案</li>
+<li>CMS使用标记-清除，内存碎片多</li>
+<li>增量更新，避免标记过程中的引用变化</li>
+</ul>
+</li>
+<li>G1.<ul>
+<li>并发标记时候不STW</li>
+<li>整理时候使用标记-整理算法，需要移动对象，STW</li>
+<li>分治的开始。开创面向局部收集的思路 + 基于Region内存布局</li>
+<li>面向CSet回收，而不是分代回收</li>
+<li>GCRoot标记停顿时间短、可控。使用Remember Set避免全堆GCRoot扫描，因此也会耗费额外的内存。写屏障维护Remember Set。</li>
+<li>原始快照(SATB)，避免标记过程中的引用变化</li>
+<li>同样G1失败（垃圾收集过程中堆就满了）会使用Serial Old作为预案</li>
+</ul>
+</li>
+<li>ZGC. <ul>
+<li>STW 10ms 以内；处理16TB内存</li>
+<li>所有流程都可以跟用户进程并发执行，只有之间有很短的STW。初始标记root、最终标记、Relocate会有STW</li>
+<li>每次回收扫描所有的region, 减少remember set的维护成本</li>
+<li>染色指针与读屏障技术；</li>
+<li>标记时候，标记在染色指针上，不是对象上</li>
+<li>Region布局</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
