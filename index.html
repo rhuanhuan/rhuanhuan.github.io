@@ -926,7 +926,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/java-zgc/" class="post-title-link" itemprop="url">Java gc综述</a>
+            <a href="/java-zgc/" class="post-title-link" itemprop="url">Java gc综述（包括ZGC）</a>
         </h2>
 
         <div class="post-meta">
@@ -943,7 +943,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-09 08:24:45" itemprop="dateModified" datetime="2020-05-09T08:24:45+08:00">2020-05-09</time>
+                <time title="Modified: 2020-05-09 08:53:56" itemprop="dateModified" datetime="2020-05-09T08:53:56+08:00">2020-05-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -975,20 +975,17 @@
 
       
           <p>GC 主要是对Java堆内存进行空间回收。</p>
-<p>GC基础方法</p>
-<ul>
+<h4 id="GC基础方法"><a href="#GC基础方法" class="headerlink" title="GC基础方法"></a>GC基础方法</h4><ul>
 <li>引用计数法</li>
 <li>可达性分析</li>
 </ul>
-<p>基础理论</p>
-<ul>
+<h4 id="基础理论"><a href="#基础理论" class="headerlink" title="基础理论"></a>基础理论</h4><ul>
 <li>分代收集理论</li>
 <li>标记-清除</li>
 <li>标记-复制</li>
 <li>标记-整理 </li>
 </ul>
-<p>GC历史</p>
-<ul>
+<h4 id="GC历史与特征"><a href="#GC历史与特征" class="headerlink" title="GC历史与特征"></a>GC历史与特征</h4><ul>
 <li>Serial + Serial Old<ul>
 <li>整个GC都STW。</li>
 <li>单线程，串行</li>
@@ -1022,11 +1019,46 @@
 </li>
 <li>ZGC. <ul>
 <li>STW 10ms 以内；处理16TB内存; 当前最先进的垃圾收集器</li>
-<li>Concurrent Relocate, 使用染色指针与读屏障技术，解决了标记-整理过程中的STW</li>
+<li>核心: 并发整理的实现。Concurrent Relocate, 使用染色指针与读屏障技术，解决了标记-整理过程中的STW</li>
 <li>所有流程都可以跟用户进程并发执行，只有之间有很短的STW。初始标记root、最终标记、准备Relocate会有短暂STW</li>
 <li>每次回收扫描所有的region, 减少remember set的维护成本</li>
 <li>标记时候，标记在染色指针上，不是对象上</li>
-<li>Region布局</li>
+<li>Region布局，延续了分治的思想</li>
+<li>未分代，因为优先级的问题而不是算法的设计。因此如果大量创建朝生熄灭的对象性能会降低</li>
+</ul>
+</li>
+</ul>
+<h4 id="其他算法细节"><a href="#其他算法细节" class="headerlink" title="其他算法细节"></a>其他算法细节</h4><ul>
+<li>根节点枚举: <ul>
+<li>所有垃圾收集器，包括ZGC, 根节点枚举都要STW</li>
+<li>OopMap(Ordinary Object Pointer Map)，支持快速准确完成GC root 枚举。标注出栈帧中的局部变量表哪些变量是引用，这样GC扫描时候可以直接获取这些信息，而不是去到处找</li>
+</ul>
+</li>
+<li>安全点: Safepoint<ul>
+<li>OopMap变化很多，全纪录消耗很大，只在特定地方记录了，称为Safe point</li>
+<li>只有到达安全点才能开始GC</li>
+<li>抢先式中断与主动式中断（常用）</li>
+</ul>
+</li>
+<li>安全区域<ul>
+<li>确保某一块区域中，引用关系不会发生变化。比如线程中断或者挂起的地方</li>
+</ul>
+</li>
+<li>记忆集（Remember Set）<ul>
+<li>缩减GC Root扫描范围，解决跨代/跨区域引用，避免一次把所有对象加入GC Root</li>
+<li>卡表是Remember Set的一种实现</li>
+</ul>
+</li>
+<li>写屏障<ul>
+<li>解决卡表元素维护的问题</li>
+<li>区别 “读屏障” 与 解决并发乱序执行的 “内存屏障”概念</li>
+</ul>
+</li>
+<li>并发可达性分析<ul>
+<li>可达性分析中，用户线程并发执行，避免把存活对象标死了</li>
+<li>三色标记法: 黑色扫描完了的，灰色扫描了一半的，白色没扫描的. 如果黑的加了个白的，就会被漏掉</li>
+<li>增量更新: 黑色对象加了对白色对象的引用后，就会变成黑的</li>
+<li>原始快照: 按照刚开始扫描时候的对象快照图来搜索。</li>
 </ul>
 </li>
 </ul>
