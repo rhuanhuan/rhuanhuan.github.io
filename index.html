@@ -943,7 +943,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-09 01:20:57" itemprop="dateModified" datetime="2020-05-09T01:20:57+08:00">2020-05-09</time>
+                <time title="Modified: 2020-05-09 08:24:45" itemprop="dateModified" datetime="2020-05-09T08:24:45+08:00">2020-05-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1021,10 +1021,10 @@
 </ul>
 </li>
 <li>ZGC. <ul>
-<li>STW 10ms 以内；处理16TB内存</li>
-<li>所有流程都可以跟用户进程并发执行，只有之间有很短的STW。初始标记root、最终标记、Relocate会有STW</li>
+<li>STW 10ms 以内；处理16TB内存; 当前最先进的垃圾收集器</li>
+<li>Concurrent Relocate, 使用染色指针与读屏障技术，解决了标记-整理过程中的STW</li>
+<li>所有流程都可以跟用户进程并发执行，只有之间有很短的STW。初始标记root、最终标记、准备Relocate会有短暂STW</li>
 <li>每次回收扫描所有的region, 减少remember set的维护成本</li>
-<li>染色指针与读屏障技术；</li>
 <li>标记时候，标记在染色指针上，不是对象上</li>
 <li>Region布局</li>
 </ul>
