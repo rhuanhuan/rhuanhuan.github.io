@@ -29,7 +29,7 @@
 <meta property="og:description" content="GC 主要是对Java堆内存进行空间回收。 GC基础方法 引用计数法 可达性分析  基础理论 分代收集理论 标记-清除 标记-复制 标记-整理   GC历史与特征 Serial + Serial Old 整个GC都STW。 单线程，串行 分代：新生代标记-复制；老年代标记整理   Parallel Scavenge + Parallel old。 整个GC都STW 关注点在吞吐量 并行; 分代：新">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-03T15:21:16.000Z">
-<meta property="article:modified_time" content="2020-05-09T00:53:56.894Z">
+<meta property="article:modified_time" content="2020-05-09T01:06:05.163Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="jvm">
@@ -215,7 +215,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-09 08:53:56" itemprop="dateModified" datetime="2020-05-09T08:53:56+08:00">2020-05-09</time>
+                <time title="Modified: 2020-05-09 09:06:05" itemprop="dateModified" datetime="2020-05-09T09:06:05+08:00">2020-05-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -297,6 +297,8 @@
 <li>标记时候，标记在染色指针上，不是对象上</li>
 <li>Region布局，延续了分治的思想</li>
 <li>未分代，因为优先级的问题而不是算法的设计。因此如果大量创建朝生熄灭的对象性能会降低</li>
+<li>Partial Compaction: 把要回收的region有用的对象复制过来。然后直接把那个region干掉。因为染色指针回收区域效率更高。</li>
+<li>支持NUMA的CPU结构，CPU分配内存时候，优先分配离得近的内存</li>
 </ul>
 </li>
 </ul>
@@ -333,6 +335,12 @@
 <li>原始快照: 按照刚开始扫描时候的对象快照图来搜索。</li>
 </ul>
 </li>
+</ul>
+<p>参考资料:</p>
+<ul>
+<li>《深入理解JVM(第三版)》</li>
+<li><a href="https://wiki.openjdk.java.net/display/zgc/Main" target="_blank" rel="noopener">ZGC Wiki</a></li>
+<li><a href="http://cr.openjdk.java.net/~pliden/slides/ZGC-FOSDEM-2018.pdf" target="_blank" rel="noopener">The Z Garbage Collector - An introduce</a></li>
 </ul>
 
     </div>
