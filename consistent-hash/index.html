@@ -29,7 +29,7 @@
 <meta property="og:description" content="什么是一致性哈希算法？一种特殊的hash算法，主要解决了简单哈希算法在分布式哈希表( Distributed Hash Table，DHT) 中存在的动态伸缩等问题。一致性hash的使用在分布式系统的比较常见，比如分布式存储，分布式计算等等（多队列多任务） 为什么要用一致性哈希算法？以缓存集群为例，为了提高缓存的吞吐量，我们通常会把缓存求hash然后分配到不同的节点上。我们要分配节点第一想到的办法">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-26T14:49:12.000Z">
-<meta property="article:modified_time" content="2020-04-26T16:22:21.795Z">
+<meta property="article:modified_time" content="2020-05-15T16:15:35.595Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="hash">
 <meta property="article:tag" content="分布式">
@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-27 00:22:21" itemprop="dateModified" datetime="2020-04-27T00:22:21+08:00">2020-04-27</time>
+                <time title="Modified: 2020-05-16 00:15:35" itemprop="dateModified" datetime="2020-05-16T00:15:35+08:00">2020-05-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -243,6 +243,8 @@
         <h3 id="什么是一致性哈希算法？"><a href="#什么是一致性哈希算法？" class="headerlink" title="什么是一致性哈希算法？"></a>什么是一致性哈希算法？</h3><p>一种特殊的hash算法，主要解决了简单哈希算法在分布式哈希表( Distributed Hash Table，DHT) 中存在的动态伸缩等问题。<br>一致性hash的使用在分布式系统的比较常见，比如分布式存储，分布式计算等等（多队列多任务）</p>
 <h3 id="为什么要用一致性哈希算法？"><a href="#为什么要用一致性哈希算法？" class="headerlink" title="为什么要用一致性哈希算法？"></a>为什么要用一致性哈希算法？</h3><p>以缓存集群为例，为了提高缓存的吞吐量，我们通常会把缓存求hash然后分配到不同的节点上。<br>我们要分配节点第一想到的办法就是<strong>取模</strong>。即现在有3个节点，假设资源key=7,7%3=1，则选择Node1，key=3，3%3=0，则选择Node0。<br>这种方法虽然简单，但有个缺点，如果节点数增加或减少，就会有大量的key不命中，请求会直接到达数据库（击穿）。</p>
 <p>类似的场景还有rpc服务的负载均衡。为了解决这种问题，<strong>让节点数量变化时候，只会引起很少部分的key不会命中，于是有了一致性hash算法。</strong></p>
+<a id="more"></a>
+
 <h3 id="逻辑"><a href="#逻辑" class="headerlink" title="逻辑"></a>逻辑</h3><h4 id="原理解析"><a href="#原理解析" class="headerlink" title="原理解析"></a>原理解析</h4><p>前面提到，取余算法会有大量的key不命中，那么如何减少不命中的key呢？  </p>
 <p><strong>其实原理很简单，就是分区域</strong>。<br>首先，hash值作为一个整型，会落在 0 ~ 2^32 -1 的范围内。<br>如果我有4个节点，那么把hash值划分为4个区域，<code>0 ~ 2^30 -1</code>，<code>2^30 ~ 2^31 -1</code>，<code>2^31 ~ 3 * 2^30 -1</code>，<code>3 * 2^30 ~ 2^32 -1</code>  </p>
 <ul>
@@ -264,7 +266,7 @@
 <p>一般如果节点数越少，每个节点对应的虚拟节点数就越多。</p>
 <p>参考资料:</p>
 <ul>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzI2MTk1NDY0Mw==&mid=2247483768&idx=1&sn=fee0eda48ea283de79d787387ae5d89e&chksm=ea53cc44dd24455248ce8ce49aefa2d707b61041a221322dcba86bdeeb4295f0c61be2c40f70&scene=21#wechat_redirect" target="_blank" rel="noopener">一致性哈希算法，在分布式开发中你必须会写，来看完整代</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzI2MTk1NDY0Mw==&mid=2247483768&idx=1&sn=fee0eda48ea283de79d787387ae5d89e&chksm=ea53cc44dd24455248ce8ce49aefa2d707b61041a221322dcba86bdeeb4295f0c61be2c40f70&scene=21#wechat_redirect" target="_blank" rel="noopener">一致性哈希算法，在分布式开发中你必须会写</a></li>
 </ul>
 
     </div>

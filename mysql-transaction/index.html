@@ -29,7 +29,7 @@
 <meta property="og:description" content="事务是一个序列操作，其中的操作要么都执行，要么都不执行，它是一个不可分割的工作单位；数据库事务的 ACID 四大特性是事务的基础，了解了 ACID 是如何实现的，我们也就清楚了事务的实现。 MySQL 如何保证事务性?MySQL事务在哪实现的？  MySQL中服务器层不管理事务，事务是由存储引擎实现的。 MySQL支持事务的存储引擎有InnoDB、NDB Cluster等，其中InnoDB的使用最">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-01T13:47:53.000Z">
-<meta property="article:modified_time" content="2020-04-11T09:00:15.249Z">
+<meta property="article:modified_time" content="2020-05-15T16:14:32.814Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="Mysql">
 <meta property="article:tag" content="Transaction">
@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-11 17:00:15" itemprop="dateModified" datetime="2020-04-11T17:00:15+08:00">2020-04-11</time>
+                <time title="Modified: 2020-05-16 00:14:32" itemprop="dateModified" datetime="2020-05-16T00:14:32+08:00">2020-05-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,6 +253,8 @@
 <li>undo log+redo log保证事务的一致性</li>
 <li>锁（共享、排他）用来保证事务的隔离性</li>
 </ul>
+<a id="more"></a>
+
 <h2 id="持久性与redo-log"><a href="#持久性与redo-log" class="headerlink" title="持久性与redo log"></a>持久性与redo log</h2><h3 id="持久性"><a href="#持久性" class="headerlink" title="持久性"></a>持久性</h3><p>而事务的持久性就体现在，一旦事务被提交，那么数据一定会被写入到数据库中并持久存储起来。就算数据没来得及写入磁盘就宕机时，在下次重新启动后能够成功恢复数据（持久性）；<br>当事务已经被提交之后，就无法再次回滚了，唯一能够撤回已经提交的事务的方式就是创建一个相反的事务对原操作进行『补偿』，这也是事务持久性的体现之一。</p>
 <h3 id="redo-log存在的背景"><a href="#redo-log存在的背景" class="headerlink" title="redo log存在的背景"></a>redo log存在的背景</h3><p>InnoDB作为MySQL的存储引擎，数据是存放在磁盘中的，但如果每次读写数据都需要磁盘IO，效率会很低。为此，InnoDB提供了缓存(Buffer Pool)，Buffer Pool中包含了磁盘中部分数据页的映射，作为访问数据库的缓冲：</p>
 <ul>

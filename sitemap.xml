@@ -2,9 +2,65 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rhuanhuan.github.io/consistent-hash/</loc>
+    
+    <lastmod>2020-05-15T16:15:35.595Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://rhuanhuan.github.io/understand-https/</loc>
     
-    <lastmod>2020-05-15T16:11:09.417Z</lastmod>
+    <lastmod>2020-05-15T16:14:37.991Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/mysql-transaction/</loc>
+    
+    <lastmod>2020-05-15T16:14:32.814Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
+    
+    <lastmod>2020-05-15T16:14:16.406Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/java9-String-use-byte-not-char/</loc>
+    
+    <lastmod>2020-05-15T16:14:00.613Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/inception-101/</loc>
+    
+    <lastmod>2020-05-15T16:13:52.430Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/</loc>
+    
+    <lastmod>2020-05-15T16:13:41.359Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/distributed-transaction-seata-demo/</loc>
+    
+    <lastmod>2020-05-15T16:13:22.877Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/build-k8s-operator-with-kubebuild-demo/</loc>
+    
+    <lastmod>2020-05-15T16:12:58.870Z</lastmod>
     
   </url>
   
@@ -16,27 +72,6 @@
   </url>
   
   <url>
-    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
-    
-    <lastmod>2020-05-15T15:56:01.739Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/consistent-hash/</loc>
-    
-    <lastmod>2020-04-26T16:22:21.795Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/inception-101/</loc>
-    
-    <lastmod>2020-04-26T11:54:26.706Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://rhuanhuan.github.io/how-to-create-blog-in-github/</loc>
     
     <lastmod>2020-04-23T14:35:40.646Z</lastmod>
@@ -44,44 +79,9 @@
   </url>
   
   <url>
-    <loc>https://rhuanhuan.github.io/how-to-contribute-to-an-open-source-project/</loc>
-    
-    <lastmod>2020-04-22T13:56:22.298Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/distributed-transaction-seata-demo/</loc>
-    
-    <lastmod>2020-04-11T09:14:55.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/mysql-transaction/</loc>
-    
-    <lastmod>2020-04-11T09:00:15.249Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://rhuanhuan.github.io/high-available-kong-nginx-deploy-in-k8s/</loc>
     
     <lastmod>2020-04-09T02:32:08.997Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/java9-String-use-byte-not-char/</loc>
-    
-    <lastmod>2020-03-22T12:32:17.281Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/build-k8s-operator-with-kubebuild-demo/</loc>
-    
-    <lastmod>2020-03-15T08:30:58.528Z</lastmod>
     
   </url>
   

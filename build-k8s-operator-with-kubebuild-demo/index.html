@@ -29,7 +29,7 @@
 <meta property="og:description" content="基于MacOS, 项目代码 环境准备 可运行的k8s集群，以及kubectl   kubebuilder. brew install kubebuilder, 如果还需要跑测试什么的，建议使用二进制安装, 踩到了一个brew安装跑不了测试的坑，后面会说到。   kustomize. brew install kustomize    基本概念首先介绍一下本文内容所涉及到的基本概念。 CRD (Cu">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-03-13T12:55:30.000Z">
-<meta property="article:modified_time" content="2020-03-15T08:30:58.528Z">
+<meta property="article:modified_time" content="2020-05-15T16:12:58.870Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="k8s">
 <meta property="article:tag" content="operator">
@@ -214,7 +214,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-15 16:30:58" itemprop="dateModified" datetime="2020-03-15T16:30:58+08:00">2020-03-15</time>
+                <time title="Modified: 2020-05-16 00:12:58" itemprop="dateModified" datetime="2020-05-16T00:12:58+08:00">2020-05-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,6 +254,8 @@
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>首先介绍一下本文内容所涉及到的基本概念。</p>
 <p><strong>CRD (Custom Resource Definition)</strong>: 允许用户自定义 Kubernetes 资源，是一个类型；<br><strong>CR (Custom Resourse)</strong>: CRD 的一个具体实例；<br><strong>webhook</strong>: 在本文语义下，它是一种会注册到 apiserver 上的HTTP 回调，。在 apiserver 特定事件发生时，会查询已注册的 webhook，并把相应的消息转发过去。<br>按照处理类型的不同，一般可以将其分为两类：一类可能会修改传入对象，称为 mutating webhook；一类则会只读传入对象，称为 validating webhook。<br><strong>工作队列</strong>：controller 的核心组件。它会监控集群内的资源变化，并把相关的对象，包括它的动作与 key，例如 Pod 的一个 Create 动作，作为一个事件存储于该队列中；<br><strong>controller</strong>: 控制器的工作是确保任何K8S的对象，它的实际运行状态与对象定义的期望状态匹配。每个控制器关注一种类型，但可能与其他类型交互。这个过程通常叫做<strong>reconciling</strong>。<br>实际运行中，它会循环地处理上述工作队列，按照各自的逻辑把集群状态向预期状态推动。不同的 controller 处理的类型不同，比如 replicaset controller 关注的是副本数，会处理一些 Pod 相关的事件； </p>
 <p><strong>operator</strong>: operator 是描述、部署和管理 kubernetes 应用的一套机制，从实现上来说，可以将其理解为 CRD 配合可选的 webhook 与 controller 来实现用户业务逻辑，即 operator = CRD + webhook + controller。</p>
+<a id="more"></a>
+
 <h2 id="operator工作流程："><a href="#operator工作流程：" class="headerlink" title="operator工作流程："></a>operator工作流程：</h2><ol>
 <li>用户创建一个自定义资源 (CRD)；</li>
 <li>apiserver 根据自己注册的一个 pass 列表，把该 CRD 的请求转发给 webhook；</li>

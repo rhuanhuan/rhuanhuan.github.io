@@ -211,7 +211,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-15 16:30:58" itemprop="dateModified" datetime="2020-03-15T16:30:58+08:00">2020-03-15</time>
+                <time title="Modified: 2020-05-16 00:12:58" itemprop="dateModified" datetime="2020-05-16T00:12:58+08:00">2020-05-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,109 +251,14 @@
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>首先介绍一下本文内容所涉及到的基本概念。</p>
 <p><strong>CRD (Custom Resource Definition)</strong>: 允许用户自定义 Kubernetes 资源，是一个类型；<br><strong>CR (Custom Resourse)</strong>: CRD 的一个具体实例；<br><strong>webhook</strong>: 在本文语义下，它是一种会注册到 apiserver 上的HTTP 回调，。在 apiserver 特定事件发生时，会查询已注册的 webhook，并把相应的消息转发过去。<br>按照处理类型的不同，一般可以将其分为两类：一类可能会修改传入对象，称为 mutating webhook；一类则会只读传入对象，称为 validating webhook。<br><strong>工作队列</strong>：controller 的核心组件。它会监控集群内的资源变化，并把相关的对象，包括它的动作与 key，例如 Pod 的一个 Create 动作，作为一个事件存储于该队列中；<br><strong>controller</strong>: 控制器的工作是确保任何K8S的对象，它的实际运行状态与对象定义的期望状态匹配。每个控制器关注一种类型，但可能与其他类型交互。这个过程通常叫做<strong>reconciling</strong>。<br>实际运行中，它会循环地处理上述工作队列，按照各自的逻辑把集群状态向预期状态推动。不同的 controller 处理的类型不同，比如 replicaset controller 关注的是副本数，会处理一些 Pod 相关的事件； </p>
 <p><strong>operator</strong>: operator 是描述、部署和管理 kubernetes 应用的一套机制，从实现上来说，可以将其理解为 CRD 配合可选的 webhook 与 controller 来实现用户业务逻辑，即 operator = CRD + webhook + controller。</p>
-<h2 id="operator工作流程："><a href="#operator工作流程：" class="headerlink" title="operator工作流程："></a>operator工作流程：</h2><ol>
-<li>用户创建一个自定义资源 (CRD)；</li>
-<li>apiserver 根据自己注册的一个 pass 列表，把该 CRD 的请求转发给 webhook；</li>
-<li>webhook 一般会完成该 CRD 的缺省值设定和参数检验。webhook 处理完之后，相应的 CR 会被写入数据库，返回给用户；</li>
-<li>与此同时，controller 会在后台监测该自定义资源，按照业务逻辑，处理与该自定义资源相关联的特殊操作；</li>
-<li>上述处理一般会引起集群内的状态变化，controller 会监测这些关联的变化，把这些变化记录到 CRD 的状态中。</li>
-</ol>
-<h2 id="初始化项目脚手架"><a href="#初始化项目脚手架" class="headerlink" title="初始化项目脚手架"></a>初始化项目脚手架</h2><h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir $GOPATH&#x2F;src&#x2F;example  </span><br><span class="line">cd $GOPATH&#x2F;src&#x2F;example  </span><br><span class="line">kubebuilder init --domain tutorial.kubebuilder.io</span><br></pre></td></tr></table></figure>
-<p>如果熟悉k8s的api的话，我们经常用到四个名词：groups, versions, kinds, and resources.<br><code>--domain</code> 后面跟的是后续注册 CRD 对象的 Group。  </p>
-<h3 id="脚手架里有什么？"><a href="#脚手架里有什么？" class="headerlink" title="脚手架里有什么？"></a>脚手架里有什么？</h3><p>构建项目的基础设施文件  </p>
-<ul>
-<li><code>go.mod</code>  </li>
-<li><code>Makefile</code>  </li>
-<li><code>PROJECT</code>  </li>
-</ul>
-<p>启动配置文件: <code>config/</code>文件夹  </p>
-<ul>
-<li><code>config/default</code>: contains a Kustomize base for launching the controller in a standard configuration.</li>
-<li><code>config/manager</code>: launch your controllers as pods in the cluster</li>
-<li><code>config/rbac</code>: permissions required to run your controllers under their own service account</li>
-</ul>
-<p>入口  </p>
-<ul>
-<li><code>main.go</code>: 项目的基础入口文件.</li>
-</ul>
-<h2 id="添加新的API和Controller"><a href="#添加新的API和Controller" class="headerlink" title="添加新的API和Controller"></a>添加新的API和Controller</h2><p>指令： <code>kubebuilder create api --group batch --version v1 --kind CronJob</code></p>
-<p>最后的api版本和kind如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: batch.tutorial.kubebuilder.io&#x2F;v1</span><br><span class="line">kind: CronJob</span><br></pre></td></tr></table></figure>
-
-<p>参数：<br>group 加上之前的 domian 即此 CRD 的 Group: apps.kruise.io；<br>version 一般分三种，按社区标准；</p>
-<ul>
-<li>v1alpha1: 此 api 不稳定，CRD 可能废弃、字段可能随时调整，不要依赖；</li>
-<li>v1beta1: api 已稳定，会保证向后兼容，特性可能会调整；</li>
-<li>v1: api 和特性都已稳定；<br>kind: 此 CRD 的类型  </li>
-</ul>
-<p>需要写代码的文件有两个，具体代码可以参照文初代码库commit:<br><code>src/operator-cronjob-demo/api/v1/cronjob_types.go</code>: 定义crd类型<br><code>src/operator-cronjob-demo/controllers/cronjob_controller.go</code>: 定义controller逻辑<br>修改代码包括修改字段与注释，因为kubebuilder会通过注释来生成代码。(感觉这个有点magic，go注释同时具备java的annotation和注释的功能？)</p>
-<h3 id="API中有什么？"><a href="#API中有什么？" class="headerlink" title="API中有什么？"></a>API中有什么？</h3><p>API的代码中有这么一些东西：  </p>
-<ul>
-<li>导入meta头。 <code>import metav1 &quot;k8s.io/apimachinery/pkg/apis/meta/v1&quot;</code></li>
-<li>定义<code>Spec</code>和<code>Status</code>的结构</li>
-<li>定义实际的Kind对应的结构，<code>CronJob</code> 和 <code>CronJobList</code>。这两个默认的通常不需要修改</li>
-</ul>
-<p>接下来设计api接口，k8s api有一些通用的规定，比如所有序列化的feild必须用<strong>驼峰命名</strong>。使用<code>omitempty</code>标签标记一个字段空的时候不序列化。<br>之后可以考虑，我们如果要写一个cronjob的话，需要做哪些事情？  </p>
-<ol>
-<li>一个定时器</li>
-<li>一个执行的任务模板（job to run）</li>
-<li>一些让user用起来更方便的配置，包括:<ul>
-<li>启动任务的deadline (如果不填写，默认给到下一次任务启动的时候)</li>
-<li>如果多个任务同时启动怎么办？(wait? stop the old one? run both?)</li>
-<li>暂停任务的方式。遇到错误时候使用</li>
-<li>限制旧的任务数量</li>
-</ul>
-</li>
-</ol>
-<h3 id="Controller中有什么？"><a href="#Controller中有什么？" class="headerlink" title="Controller中有什么？"></a>Controller中有什么？</h3><p>Controller是k8s以及operator的核心。  </p>
-<ul>
-<li>首先当然是依赖核心的<code>controller-runtime</code>库。<code>&quot;sigs.k8s.io/controller-runtime/pkg/client&quot;</code></li>
-<li><code>reconciler</code>结构</li>
-<li>controller在集群中需要的RBAC资源，可以用marker添加</li>
-</ul>
-<p>基于上述的api的设计，cronjob的controller需要做的事情有：</p>
-<ol>
-<li>加载指定的 CronJob</li>
-<li>列出所有活动的 jobs，并更新状态</li>
-<li>根据历史的限制,清理旧的jobs</li>
-<li>检查是否挂起(如果挂起，不要做其他任何事情)</li>
-<li>运行下一个schedule周期</li>
-<li>如果schedule里有一个新的job，没有超过deadline，也没有被并发策略阻塞，则运行它</li>
-<li>到了下一个时间周期时候，重新排列</li>
-</ol>
-<h2 id="实现webhook"><a href="#实现webhook" class="headerlink" title="实现webhook"></a>实现webhook</h2><p>如果想对crd添加<code>admission webhooks</code>，只需要implement <code>Defaulter</code> 或者 <code>Validator</code>接口。kubebuilder会：</p>
-<ul>
-<li>创建 webhook server.</li>
-<li>把server 添加到 manager.</li>
-<li>为webhooks添加<code>hanlder</code></li>
-<li>为每个<code>handler</code>在server里添加一个路径.</li>
-</ul>
-<p>创建webhook<code>kubebuilder create webhook --group batch --version v1 --kind CronJob --defaulting --programmatic-validation</code>  </p>
-<ul>
-<li><code>--defaulting</code>: 添加<code>Defaulter</code>接口，默认给声明式api接口添加的webhook  </li>
-<li><code>--programmatic-validation</code>: 添加<code>Validator</code>接口，可以作用于其他crud方法  </li>
-</ul>
-<h2 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h2><p>直接这么本地部署webhook可能会遇到报错：<code>problem running manager    {&quot;error&quot;: &quot;open /tmp/k8s-webhook-server/serving-certs/tls.crt: no such file or directory&quot;}</code><br>因为默认的webhook需要证书的，在本地启动时候可以把这个逻辑添加环境变量参数给跳过。可以参考文中代码库的做法</p>
-<p><code>make install</code>, 安装crd<br><code>make run ENABLE_WEBHOOKS=false</code>, 本地run controller<br>添加sample文件: <code>config/samples/batch_v1_cronjob.yaml</code>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: batch.tutorial.kubebuilder.io&#x2F;v1</span><br><span class="line">kind: CronJob</span><br><span class="line">metadata:</span><br><span class="line">  name: cronjob-sample</span><br><span class="line">spec:</span><br><span class="line">  schedule: &quot;*&#x2F;1 * * * *&quot;</span><br><span class="line">  startingDeadlineSeconds: 60</span><br><span class="line">  concurrencyPolicy: Allow # explicitly specify, but Allow is also default.</span><br><span class="line">  jobTemplate:</span><br><span class="line">    spec:</span><br><span class="line">      template:</span><br><span class="line">        spec:</span><br><span class="line">          containers:</span><br><span class="line">          - name: hello</span><br><span class="line">            image: busybox</span><br><span class="line">            args:</span><br><span class="line">            - &#x2F;bin&#x2F;sh</span><br><span class="line">            - -c</span><br><span class="line">            - date; echo Hello from the Kubernetes cluster</span><br><span class="line">          restartPolicy: OnFailure</span><br></pre></td></tr></table></figure>
-<p><code>kubectl create -f config/samples/batch_v1_cronjob.yaml</code> 部署sample文件<br>查看状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get cronjob.batch.tutorial.kubebuilder.io -o yaml</span><br><span class="line">kubectl get job</span><br></pre></td></tr></table></figure>
-<p>如果本地正常了的话，添加证书相关的配资，就可以部署到集群了。</p>
-<h2 id="使用Cert-Manager-在集群中给webhook-server颁发证书"><a href="#使用Cert-Manager-在集群中给webhook-server颁发证书" class="headerlink" title="使用Cert Manager 在集群中给webhook server颁发证书"></a>使用Cert Manager 在集群中给webhook server颁发证书</h2><ul>
-<li>安装cert manager 可以参考<a href="https://cert-manager.io/docs/installation/kubernetes/" target="_blank" rel="noopener">官网</a>。  </li>
-<li>在<code>config/</code> 目录中添加证书相关的配置</li>
-</ul>
-<h2 id="部署到集群"><a href="#部署到集群" class="headerlink" title="部署到集群"></a>部署到集群</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make docker-build docker-push IMG&#x3D;&lt;some-registry&gt;&#x2F;&lt;project-name&gt;:tag</span><br><span class="line">make deploy IMG&#x3D;&lt;some-registry&gt;&#x2F;&lt;project-name&gt;:tag</span><br></pre></td></tr></table></figure>
-<p>make docker-build docker-push IMG=rhuanhuan/rhuan-demo:1<br>make deploy IMG=rhuanhuan/rhuan-demo:1</p>
-<p>遇到的error</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Unexpected error:</span><br><span class="line">    &lt;*errors.errorString | 0xc0004725f0&gt;: &#123;</span><br><span class="line">        s: &quot;failed to start the controlplane. retried 5 times: fork&#x2F;exec &#x2F;usr&#x2F;local&#x2F;kubebuilder&#x2F;bin&#x2F;etcd: no such file or directory&quot;,</span><br><span class="line">    &#125;</span><br><span class="line">    failed to start the controlplane. retried 5 times: fork&#x2F;exec &#x2F;usr&#x2F;local&#x2F;kubebuilder&#x2F;bin&#x2F;etcd: no such file or directory</span><br><span class="line">occurred</span><br></pre></td></tr></table></figure>
-<p>原因：<code>brew install kubebuilder</code> 时候，不会安装一些<a href="https://github.com/kubernetes-sigs/controller-runtime/blob/master/pkg/envtest/server.go#L41-L42" target="_blank" rel="noopener"><code>KUBEBUILDER_ASSETS</code></a>, 因此，跑测试时候会挂掉，找不到这些文件，<a href="https://github.com/Homebrew/homebrew-core/issues/44175" target="_blank" rel="noopener">目前brew官方没打算修复这个问题</a>。</p>
-<p>因此在部署过程中，修改Makefile跳过了go test.</p>
-<p>部署完成后查看状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get cronjob.batch.tutorial.kubebuilder.io -o yaml</span><br><span class="line">kubectl get job</span><br></pre></td></tr></table></figure>
-<p>如果不停的有新的job产生出来就算执行成功了。</p>
-<p>参考文档：<br><a href="https://book.kubebuilder.io/cronjob-tutorial/cronjob-tutorial.html" target="_blank" rel="noopener">kubebuilder官网</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/build-k8s-operator-with-kubebuild-demo/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
