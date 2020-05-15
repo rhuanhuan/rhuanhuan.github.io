@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
+    <lastmod>2020-05-15</lastmod>
+  </url>  <url>
     <loc>https://rhuanhuan.github.io/understand-https/</loc>
     <lastmod>2020-05-15</lastmod>
   </url>  <url>
@@ -27,9 +30,6 @@
   </url>  <url>
     <loc>https://rhuanhuan.github.io/high-available-kong-nginx-deploy-in-k8s/</loc>
     <lastmod>2020-04-09</lastmod>
-  </url>  <url>
-    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
-    <lastmod>2020-04-07</lastmod>
   </url>  <url>
     <loc>https://rhuanhuan.github.io/java9-String-use-byte-not-char/</loc>
     <lastmod>2020-03-22</lastmod>

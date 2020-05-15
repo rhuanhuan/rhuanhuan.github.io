@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
+    
+    <lastmod>2020-05-15T15:26:01.692Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://rhuanhuan.github.io/understand-https/</loc>
     
     <lastmod>2020-05-15T15:15:28.943Z</lastmod>
@@ -61,13 +68,6 @@
     <loc>https://rhuanhuan.github.io/high-available-kong-nginx-deploy-in-k8s/</loc>
     
     <lastmod>2020-04-09T02:32:08.997Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://rhuanhuan.github.io/java-4-kind-of-references/</loc>
-    
-    <lastmod>2020-04-07T15:25:42.357Z</lastmod>
     
   </url>
   
