@@ -21,23 +21,25 @@
     var CONFIG = {"hostname":"rhuanhuan.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="GC 主要是对Java堆内存进行空间回收。 GC基础方法 引用计数法 可达性分析  基础理论 分代收集理论 标记-清除 标记-复制 标记-整理   GC历史与特征 Serial + Serial Old 整个GC都STW。 单线程，串行 分代：新生代标记-复制；老年代标记整理   Parallel Scavenge + Parallel old。 整个GC都STW 关注点在吞吐量 并行; 分代：新">
+  <meta name="description" content="Https的东西，看过几次了，每次看完都觉得很有意思。自己回想时候，又容易忘记一些细节。 总结一下，主要是为了保证Http的传输安全，涉及到的参与方有:  证书提供方 服务端 客户端  涉及到的密钥有  证书机构的非对称密钥 服务器证书的非对称密钥 加密通信内容的对称密钥  简单版传输过程 客户端发起请求; 服务端返回带签名的证书公钥;  签名是证书机构的私钥签的; 这样客户端可以根据证书机构的公">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java gc综述（包括ZGC）">
-<meta property="og:url" content="https://rhuanhuan.github.io/java-zgc/">
+<meta property="og:title" content="understand https">
+<meta property="og:url" content="https://rhuanhuan.github.io/understand-https/">
 <meta property="og:site_name" content="Huan Space">
-<meta property="og:description" content="GC 主要是对Java堆内存进行空间回收。 GC基础方法 引用计数法 可达性分析  基础理论 分代收集理论 标记-清除 标记-复制 标记-整理   GC历史与特征 Serial + Serial Old 整个GC都STW。 单线程，串行 分代：新生代标记-复制；老年代标记整理   Parallel Scavenge + Parallel old。 整个GC都STW 关注点在吞吐量 并行; 分代：新">
+<meta property="og:description" content="Https的东西，看过几次了，每次看完都觉得很有意思。自己回想时候，又容易忘记一些细节。 总结一下，主要是为了保证Http的传输安全，涉及到的参与方有:  证书提供方 服务端 客户端  涉及到的密钥有  证书机构的非对称密钥 服务器证书的非对称密钥 加密通信内容的对称密钥  简单版传输过程 客户端发起请求; 服务端返回带签名的证书公钥;  签名是证书机构的私钥签的; 这样客户端可以根据证书机构的公">
 <meta property="og:locale" content="zh">
-<meta property="article:published_time" content="2020-04-03T15:21:16.000Z">
-<meta property="article:modified_time" content="2020-05-09T01:06:05.163Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-process-brief.jpeg">
+<meta property="og:image" content="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-steps.jpeg">
+<meta property="og:image" content="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-steps-detail.jpeg">
+<meta property="article:published_time" content="2020-05-15T13:21:53.000Z">
+<meta property="article:modified_time" content="2020-05-15T15:13:53.700Z">
 <meta property="article:author" content="Huan Ruan">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="jvm">
-<meta property="article:tag" content="gc">
-<meta property="article:tag" content="zgc">
+<meta property="article:tag" content="https">
+<meta property="article:tag" content="加密">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-process-brief.jpeg">
 
-<link rel="canonical" href="https://rhuanhuan.github.io/java-zgc/">
+<link rel="canonical" href="https://rhuanhuan.github.io/understand-https/">
 
 
 <script id="page-configurations">
@@ -49,7 +51,7 @@
   };
 </script>
 
-  <title>Java gc综述（包括ZGC） | Huan Space</title>
+  <title>understand https | Huan Space</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-159926406-1"></script>
     <script>
@@ -185,7 +187,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/java-zgc/">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/understand-https/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -198,7 +200,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          Java gc综述（包括ZGC）
+          understand https
         </h2>
 
         <div class="post-meta">
@@ -207,16 +209,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-04-03 23:21:16" itemprop="dateCreated datePublished" datetime="2020-04-03T23:21:16+08:00">2020-04-03</time>
+              <time title="Created: 2020-05-15 21:21:53 / Modified: 23:13:53" itemprop="dateCreated datePublished" datetime="2020-05-15T21:21:53+08:00">2020-05-15</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-09 09:06:05" itemprop="dateModified" datetime="2020-05-09T09:06:05+08:00">2020-05-09</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -227,11 +223,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                  <a href="/categories/Technical/NetWork/" itemprop="url" rel="index"><span itemprop="name">NetWork</span></a>
                 </span>
             </span>
 
@@ -246,102 +238,59 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>GC 主要是对Java堆内存进行空间回收。</p>
-<h4 id="GC基础方法"><a href="#GC基础方法" class="headerlink" title="GC基础方法"></a>GC基础方法</h4><ul>
-<li>引用计数法</li>
-<li>可达性分析</li>
-</ul>
-<h4 id="基础理论"><a href="#基础理论" class="headerlink" title="基础理论"></a>基础理论</h4><ul>
-<li>分代收集理论</li>
-<li>标记-清除</li>
-<li>标记-复制</li>
-<li>标记-整理 </li>
-</ul>
-<h4 id="GC历史与特征"><a href="#GC历史与特征" class="headerlink" title="GC历史与特征"></a>GC历史与特征</h4><ul>
-<li>Serial + Serial Old<ul>
-<li>整个GC都STW。</li>
-<li>单线程，串行</li>
-<li>分代：新生代标记-复制；老年代标记整理</li>
-</ul>
-</li>
-<li>Parallel Scavenge + Parallel old。<ul>
-<li>整个GC都STW</li>
-<li>关注点在吞吐量</li>
-<li>并行;</li>
-<li>分代：新生代标记-复制；老年代标记整理 </li>
-</ul>
-</li>
-<li>ParNew + CMS. <ul>
-<li>Reference图遍历阶段（并发标记）、与标记完的清理（并发清理）不STW</li>
-<li>有浮动垃圾，在堆满之前就要GC（默认92%）</li>
-<li>CMS失败（垃圾收集过程中堆就满了）会使用Serial Old作为预案</li>
-<li>CMS使用标记-清除，内存碎片多</li>
-<li>增量更新，避免标记过程中的引用变化</li>
-</ul>
-</li>
-<li>G1.<ul>
-<li>并发标记时候不STW</li>
-<li>整理时候使用标记-整理算法，需要移动对象，STW</li>
-<li>分治的开始。开创面向局部收集的思路 + 基于Region内存布局</li>
-<li>面向CSet回收，而不是分代回收</li>
-<li>GCRoot标记停顿时间短、可控。使用Remember Set避免全堆GCRoot扫描，因此也会耗费额外的内存。写屏障维护Remember Set。</li>
-<li>原始快照(SATB)，避免标记过程中的引用变化</li>
-<li>同样G1失败（垃圾收集过程中堆就满了）会使用Serial Old作为预案</li>
-</ul>
-</li>
-<li>ZGC. <ul>
-<li>STW 10ms 以内；处理16TB内存; 当前最先进的垃圾收集器</li>
-<li>核心: 并发整理的实现。Concurrent Relocate, 使用染色指针与读屏障技术，解决了标记-整理过程中的STW</li>
-<li>所有流程都可以跟用户进程并发执行，只有之间有很短的STW。初始标记root、最终标记、准备Relocate会有短暂STW</li>
-<li>每次回收扫描所有的region, 减少remember set的维护成本</li>
-<li>标记时候，标记在染色指针上，不是对象上</li>
-<li>Region布局，延续了分治的思想</li>
-<li>未分代，因为优先级的问题而不是算法的设计。因此如果大量创建朝生熄灭的对象性能会降低</li>
-<li>Partial Compaction: 把要回收的region有用的对象复制过来。然后直接把那个region干掉。因为染色指针回收区域效率更高。</li>
-<li>支持NUMA的CPU结构，CPU分配内存时候，优先分配离得近的内存</li>
-</ul>
-</li>
-</ul>
-<h4 id="其他算法细节"><a href="#其他算法细节" class="headerlink" title="其他算法细节"></a>其他算法细节</h4><ul>
-<li>根节点枚举: <ul>
-<li>所有垃圾收集器，包括ZGC, 根节点枚举都要STW</li>
-<li>OopMap(Ordinary Object Pointer Map)，支持快速准确完成GC root 枚举。标注出栈帧中的局部变量表哪些变量是引用，这样GC扫描时候可以直接获取这些信息，而不是去到处找</li>
-</ul>
-</li>
-<li>安全点: Safepoint<ul>
-<li>OopMap变化很多，全纪录消耗很大，只在特定地方记录了，称为Safe point</li>
-<li>只有到达安全点才能开始GC</li>
-<li>抢先式中断与主动式中断（常用）</li>
-</ul>
-</li>
-<li>安全区域<ul>
-<li>确保某一块区域中，引用关系不会发生变化。比如线程中断或者挂起的地方</li>
-</ul>
-</li>
-<li>记忆集（Remember Set）<ul>
-<li>缩减GC Root扫描范围，解决跨代/跨区域引用，避免一次把所有对象加入GC Root</li>
-<li>卡表是Remember Set的一种实现</li>
-</ul>
-</li>
-<li>写屏障<ul>
-<li>解决卡表元素维护的问题</li>
-<li>区别 “读屏障” 与 解决并发乱序执行的 “内存屏障”概念</li>
-</ul>
-</li>
-<li>并发可达性分析<ul>
-<li>可达性分析中，用户线程并发执行，避免把存活对象标死了</li>
-<li>三色标记法: 黑色扫描完了的，灰色扫描了一半的，白色没扫描的. 如果黑的加了个白的，就会被漏掉</li>
-<li>增量更新: 黑色对象加了对白色对象的引用后，就会变成黑的</li>
-<li>原始快照: 按照刚开始扫描时候的对象快照图来搜索。</li>
-</ul>
-</li>
-</ul>
-<p>参考资料:</p>
+        <p>Https的东西，看过几次了，每次看完都觉得很有意思。自己回想时候，又容易忘记一些细节。</p>
+<p>总结一下，主要是为了保证Http的传输安全，涉及到的参与方有:</p>
 <ul>
-<li>《深入理解JVM(第三版)》</li>
-<li><a href="https://wiki.openjdk.java.net/display/zgc/Main" target="_blank" rel="noopener">ZGC Wiki</a></li>
-<li><a href="http://cr.openjdk.java.net/~pliden/slides/ZGC-FOSDEM-2018.pdf" target="_blank" rel="noopener">The Z Garbage Collector - An introduce</a></li>
+<li>证书提供方</li>
+<li>服务端</li>
+<li>客户端</li>
 </ul>
+<p>涉及到的密钥有</p>
+<ul>
+<li>证书机构的非对称密钥</li>
+<li>服务器证书的非对称密钥</li>
+<li>加密通信内容的对称密钥</li>
+</ul>
+<h4 id="简单版传输过程"><a href="#简单版传输过程" class="headerlink" title="简单版传输过程"></a>简单版传输过程</h4><ol>
+<li>客户端发起请求;</li>
+<li>服务端返回<strong>带签名</strong>的<strong>证书公钥</strong>; <ul>
+<li>签名是<strong>证书机构的私钥签的</strong>;</li>
+<li>这样客户端可以根据<strong>证书机构的公钥判断传输过来的证书公钥是真的</strong>;</li>
+</ul>
+</li>
+<li>客户端根据本地浏览器的<strong>证书机构的公钥</strong>，验证<strong>证书公钥</strong>的签名验证它是真的;<ul>
+<li><strong>证书机构的公钥</strong>为了确保真实性，避免传输的问题，一般是<strong>直接内置在浏览器中</strong>;</li>
+</ul>
+</li>
+<li>客户端确保公钥真实性后，用公钥加密pre-master secret 给服务端，并且根据该key(和之前协商的加密组件)生成<strong>对称密钥</strong>;</li>
+<li>服务端收到客户端的请求后，用私钥解开，获取pre-master secret, 并且根据该key(和之前协商的加密组件)生成<strong>对称密钥</strong>;</li>
+<li>之后所有的请求使用<strong>对称密钥</strong>通信。</li>
+</ol>
+<p>如图:<br><img src="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-process-brief.jpeg" alt="https的密钥传输过程"></p>
+<h4 id="逻辑点有"><a href="#逻辑点有" class="headerlink" title="逻辑点有:"></a>逻辑点有:</h4><ol>
+<li>使用一堆密钥加密内容，就能保证报文的安全性; </li>
+<li>使用对称密钥，双方协商密钥的过程容易被截取，导致整个传输过程变透明，因此使用非对称密钥; 私钥依然在服务端，只需要给客户端一个公开的公钥; 这样基本就保护了服务端（但是客户端依然有风险）</li>
+<li>承上，如果请求和返回被中间人攻击了，依然有可能导致客户端看到的是假的公钥而感知不到，导致信息被截取; 因此引入了第三方的证书的签名来验证公钥的真实性;</li>
+<li>那如何确保验证签名时候使用的公钥是安全的呢？似乎陷入了一个鸡生蛋、蛋生鸡的问题。最后采用的方案是: 内置可信赖的厂商的公钥证书到浏览器里面。因此只要本机浏览器是正常的，就能确保通信可靠了。（如果本机浏览器都被黑了。。。那还说个毛线通信安全了，烂透了都）</li>
+<li>非对称加密更消耗资源，因此只用非对称加密传输<strong>对称密钥</strong>，最后请求的加解密使用<strong>对称密钥</strong>完成;</li>
+</ol>
+<h4 id="传输步骤详细版过程"><a href="#传输步骤详细版过程" class="headerlink" title="传输步骤详细版过程"></a>传输步骤详细版过程</h4><p>摘自《图解HTTP协议》</p>
+<ul>
+<li>步骤1： 客户端通过发送Client Hello报文开始SSL通信。报文中包含客户端支持的SSL的指定版本、加密组件（Cipher Suite）列表（所使用的加密算法及密钥长度等）。</li>
+<li>步骤2： 服务器可进行SSL通信时，会以Server Hello报文作为应答。和客户端一样，在报文中包含SSL版本以及加密组件。服务器的加密组件内容是从接收到的客户端加密组件内筛选出来的。</li>
+<li>步骤3： 之后服务器发送Certificate报文。报文中包含公开密钥证书。</li>
+<li>步骤4： 最后服务器发送Server Hello Done报文通知客户端，最初阶段的SSL握手协商部分结束。</li>
+<li>步骤5: SSL第一次握手结束之后，客户端以Client Key Exchange报文作为回应。报文中包含通信加密中使用的一种被称为Pre-master secret的随机密码串。该报文已用步骤3中的公开密钥进行加密。</li>
+<li>步骤6： 接着客户端继续发送Change Cipher Spec报文。该报文会提示服务器，在此报文之后的通信会采用Pre-master secret密钥加密。</li>
+<li>步骤7： 客户端发送Finished报文。该报文包含连接至今全部报文的整体校验值。这次握手协商是否能够成功，要以服务器是否能够正确解密该报文作为判定标准。</li>
+<li>步骤8： 服务器同样发送Change Cipher Spec报文。</li>
+<li>步骤9： 服务器同样发送Finished报文。</li>
+<li>步骤10： 服务器和客户端的Finished报文交换完毕之后，SSL连接就算建立完成。当然，通信会受到SSL的保护。从此处开始进行应用层协议的通信，即发送HTTP请求。</li>
+<li>步骤11： 应用层协议通信，即发送HTTP响应。</li>
+<li>步骤12： 最后由客户端断开连接。断开连接时，发送close_notify报文。上图做了一些省略，这步之后再发送TCP FIN报文来关闭与TCP的通信。</li>
+</ul>
+<p>在以上流程中，应用层发送数据时会附加一种叫做MAC（Message Authentication Code）的报文摘要。MAC能够查知报文是否遭到篡改，从而保护报文的完整性。<br>流程图<br><img src="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-steps.jpeg" alt="https过程"></p>
+<p>最后总的来说，流程如下:<br><img src="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-steps-detail.jpeg" alt="https过程"></p>
 
     </div>
 
@@ -357,7 +306,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://rhuanhuan.github.io/java-zgc/" title="Java gc综述（包括ZGC）">https://rhuanhuan.github.io/java-zgc/</a>
+    <a href="https://rhuanhuan.github.io/understand-https/" title="understand https">https://rhuanhuan.github.io/understand-https/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> unless stating additionally.
@@ -368,10 +317,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/java/" rel="tag"># java</a>
-              <a href="/tags/jvm/" rel="tag"># jvm</a>
-              <a href="/tags/gc/" rel="tag"># gc</a>
-              <a href="/tags/zgc/" rel="tag"># zgc</a>
+              <a href="/tags/https/" rel="tag"># https</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag"># 加密</a>
           </div>
 
         
@@ -380,13 +327,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/mysql-transaction/" rel="prev" title="MySQL的InnoDB如何实现事务性">
-      <i class="fa fa-chevron-left"></i> MySQL的InnoDB如何实现事务性
+    <a href="/consistent-hash/" rel="prev" title="一致性哈希算法介绍">
+      <i class="fa fa-chevron-left"></i> 一致性哈希算法介绍
     </a></div>
-      <div class="post-nav-item">
-    <a href="/java-4-kind-of-references/" rel="next" title="Java中的四种引用类型">
-      Java中的四种引用类型 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -447,7 +391,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#GC基础方法"><span class="nav-number">1.</span> <span class="nav-text">GC基础方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基础理论"><span class="nav-number">2.</span> <span class="nav-text">基础理论</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GC历史与特征"><span class="nav-number">3.</span> <span class="nav-text">GC历史与特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他算法细节"><span class="nav-number">4.</span> <span class="nav-text">其他算法细节</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单版传输过程"><span class="nav-number">1.</span> <span class="nav-text">简单版传输过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#逻辑点有"><span class="nav-number">2.</span> <span class="nav-text">逻辑点有:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#传输步骤详细版过程"><span class="nav-number">3.</span> <span class="nav-text">传输步骤详细版过程</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -587,7 +531,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'blogComment',
       owner       : 'rhuanhuan',
       admin       : ['rhuanhuan'],
-      id          : '6cd4cb2c0c9d3dbd7ed81a951413d40a',
+      id          : '269475d9401dc9593ae21614dcb0f5fd',
         language: '',
       distractionFreeMode: true
     });
