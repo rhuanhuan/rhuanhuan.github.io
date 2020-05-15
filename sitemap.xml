@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rhuanhuan.github.io/spring-transaction-annotation/</loc>
+    
+    <lastmod>2020-05-15T16:49:33.306Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://rhuanhuan.github.io/consistent-hash/</loc>
     
     <lastmod>2020-05-15T16:15:35.595Z</lastmod>
