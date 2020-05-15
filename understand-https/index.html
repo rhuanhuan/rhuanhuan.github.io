@@ -23,7 +23,7 @@
 
   <meta name="description" content="Https的东西，看过几次了，每次看完都觉得很有意思。自己回想时候，又容易忘记一些细节。 总结一下，主要是为了保证Http的传输安全，涉及到的参与方有:  证书提供方 服务端 客户端  涉及到的密钥有  证书机构的非对称密钥 服务器证书的非对称密钥 加密通信内容的对称密钥  简单版传输过程 客户端发起请求; 服务端返回带签名的证书公钥;  签名是证书机构的私钥签的; 这样客户端可以根据证书机构的公">
 <meta property="og:type" content="article">
-<meta property="og:title" content="understand https">
+<meta property="og:title" content="浅析HTTPs的流程和逻辑">
 <meta property="og:url" content="https://rhuanhuan.github.io/understand-https/">
 <meta property="og:site_name" content="Huan Space">
 <meta property="og:description" content="Https的东西，看过几次了，每次看完都觉得很有意思。自己回想时候，又容易忘记一些细节。 总结一下，主要是为了保证Http的传输安全，涉及到的参与方有:  证书提供方 服务端 客户端  涉及到的密钥有  证书机构的非对称密钥 服务器证书的非对称密钥 加密通信内容的对称密钥  简单版传输过程 客户端发起请求; 服务端返回带签名的证书公钥;  签名是证书机构的私钥签的; 这样客户端可以根据证书机构的公">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-steps.jpeg">
 <meta property="og:image" content="https://raw.githubusercontent.com/rhuanhuan/blogPictures/master/network/https-steps-detail.jpeg">
 <meta property="article:published_time" content="2020-05-15T13:21:53.000Z">
-<meta property="article:modified_time" content="2020-05-15T15:13:53.700Z">
+<meta property="article:modified_time" content="2020-05-15T15:15:28.943Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="https">
 <meta property="article:tag" content="加密">
@@ -51,7 +51,7 @@
   };
 </script>
 
-  <title>understand https | Huan Space</title>
+  <title>浅析HTTPs的流程和逻辑 | Huan Space</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-159926406-1"></script>
     <script>
@@ -200,7 +200,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          understand https
+          浅析HTTPs的流程和逻辑
         </h2>
 
         <div class="post-meta">
@@ -211,7 +211,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-05-15 21:21:53 / Modified: 23:13:53" itemprop="dateCreated datePublished" datetime="2020-05-15T21:21:53+08:00">2020-05-15</time>
+              <time title="Created: 2020-05-15 21:21:53 / Modified: 23:15:28" itemprop="dateCreated datePublished" datetime="2020-05-15T21:21:53+08:00">2020-05-15</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -306,7 +306,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link: </strong>
-    <a href="https://rhuanhuan.github.io/understand-https/" title="understand https">https://rhuanhuan.github.io/understand-https/</a>
+    <a href="https://rhuanhuan.github.io/understand-https/" title="浅析HTTPs的流程和逻辑">https://rhuanhuan.github.io/understand-https/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> unless stating additionally.
