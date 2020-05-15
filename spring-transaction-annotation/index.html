@@ -29,7 +29,7 @@
 <meta property="og:description" content="Spring服务端开发中经常用到@Transactional, 之前也有文章介绍过MySQL的事务性, 这里再扒一下Spring中的@Transactional注解如何保证事务性。 @Transactional 注解的属性信息   属性名 说明    readOnly 该属性用于设置当前事务是否为只读事务，设置为true表示只读，false则表示可读写，默认值为false。例如：@Transact">
 <meta property="og:locale" content="zh">
 <meta property="article:published_time" content="2020-04-02T13:42:18.000Z">
-<meta property="article:modified_time" content="2020-05-15T16:49:33.306Z">
+<meta property="article:modified_time" content="2020-05-15T16:50:17.824Z">
 <meta property="article:author" content="Huan Ruan">
 <meta property="article:tag" content="Transaction">
 <meta property="article:tag" content="Spring">
@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-16 00:49:33" itemprop="dateModified" datetime="2020-05-16T00:49:33+08:00">2020-05-16</time>
+                <time title="Modified: 2020-05-16 00:50:17" itemprop="dateModified" datetime="2020-05-16T00:50:17+08:00">2020-05-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -285,6 +285,8 @@
 <td align="left">抛出 no-rollback-for 指定的异常类型，不回滚事务。<br> <code>@Transactional(noRollbackFor={RuntimeException.class, Exception.class})</code></td>
 </tr>
 </tbody></table>
+<a id="more"></a>
+
 <h3 id="注解位置"><a href="#注解位置" class="headerlink" title="注解位置"></a>注解位置</h3><p>@Transactional 可以作用在接口、类、类方法。</p>
 <ul>
 <li>作用于类：当把@Transactional 注解放在类上时，表示所有该类的public方法都配置相同的事务属性信息。</li>
