@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rhuanhuan.github.io/ddd-101/</loc>
+    
+    <lastmod>2020-05-17T11:39:39.213Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/event-storming-summary/</loc>
+    
+    <lastmod>2020-05-17T11:38:00.209Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://rhuanhuan.github.io/spring-transaction-annotation/</loc>
     
-    <lastmod>2020-05-15T16:52:52.246Z</lastmod>
+    <lastmod>2020-05-15T16:54:52.174Z</lastmod>
     
   </url>
   
