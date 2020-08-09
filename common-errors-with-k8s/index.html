@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="ZgMnYtjXym">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"rhuanhuan.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="参考文章:   10 most common mistakes using kubernetes Kubernetes Failure Stories Kubernetes in production — PodDisruptionBudget  主要参考了网上的一些文章和自己日常使用的一些小结，以下是一些我们经常看到的错误：  资源（resources）——requests和limits配置不合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="common errors with k8s">
+<meta property="og:url" content="https://rhuanhuan.github.io/common-errors-with-k8s/">
+<meta property="og:site_name" content="Huan Space">
+<meta property="og:description" content="参考文章:   10 most common mistakes using kubernetes Kubernetes Failure Stories Kubernetes in production — PodDisruptionBudget  主要参考了网上的一些文章和自己日常使用的一些小结，以下是一些我们经常看到的错误：  资源（resources）——requests和limits配置不合">
+<meta property="og:locale" content="zh">
+<meta property="article:published_time" content="2020-08-09T08:34:17.000Z">
+<meta property="article:modified_time" content="2020-08-09T08:35:40.811Z">
+<meta property="article:author" content="Huan Ruan">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://rhuanhuan.github.io/common-errors-with-k8s/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>common errors with k8s | Huan Space</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-159926406-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-159926406-1');
+      }
+    </script>
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?10da0e2af4774cc3e613a29b08f88774";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Huan Space</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">huan huan的草窝</h1>
+      
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/rhuanhuan" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/common-errors-with-k8s/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          common errors with k8s
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-08-09 16:34:17 / Modified: 16:35:40" itemprop="dateCreated datePublished" datetime="2020-08-09T16:34:17+08:00">2020-08-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Cloud-Native/" itemprop="url" rel="index"><span itemprop="name">Cloud Native</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Cloud-Native/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>参考文章: </p>
+<ul>
+<li><a href="https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s/" target="_blank" rel="noopener">10 most common mistakes using kubernetes</a></li>
+<li><a href="https://k8s.af/" target="_blank" rel="noopener">Kubernetes Failure Stories</a></li>
+<li><a href="https://blog.marekbartik.com/posts/2018-06-29_kubernetes-in-production-poddisruptionbudget/" target="_blank" rel="noopener">Kubernetes in production — PodDisruptionBudget</a></li>
+</ul>
+<p>主要参考了网上的一些文章和自己日常使用的一些小结，以下是一些我们经常看到的错误：</p>
+<ol>
+<li>资源（resources）——requests和limits配置不合理</li>
+<li>Liveness和Readiness探针配置不合理</li>
+<li>为每个http服务都设置负载均衡</li>
+<li>使用非Kubernetes感知的集群自动扩展</li>
+<li>未定义pod的反亲和性</li>
+<li>没有使用PodDisruptionBudget</li>
+<li>多租户或多环境共享集群</li>
+<li>使用latest标签</li>
+</ol>
+<h2 id="1-资源（resources）——requests和limits"><a href="#1-资源（resources）——requests和limits" class="headerlink" title="1. 资源（resources）——requests和limits"></a>1. 资源（resources）——requests和limits</h2><p>这个绝对是最值得注意以及最先拿出来讲解的。  </p>
+<p><strong>使用建议</strong>: </p>
+<ol>
+<li>CPU通常只建议设置一个较为合理的 <code>request</code>，而无需设置<code>limit</code>；</li>
+<li>Memory通常建议设置成为 <code>Guaranteed QoS</code>，即<code>request</code> == <code>limit</code>；</li>
+</ol>
+<p><strong>常见的错误场景及可能导致的结果</strong><br><strong>关于CPU的有:</strong></p>
+<ol>
+<li><strong>不设置</strong> CPU request; （会导致资源抢占，驱逐pod，乃至集群雪崩）</li>
+<li>将CPU请求<strong>设置得很低</strong>;（这样我们就可以在每个节点上容纳很多Pod。但是当pod负载过高时，pod仅能获取他所请求的那部分资源，会导致资源的限制成为瓶颈）</li>
+<li>给CPU <strong>设置limit</strong> ;  (在CPU负载高的时候，workload的CPU limit成为瓶颈，导致延迟、超时等问题；关于CPU的limit有一些围绕CPU CFS和CPU limit的讨论，但是通常认为设置CPU limit会引发更多的问题)</li>
+</ol>
+<p><strong>关于Memory的有:</strong></p>
+<ol>
+<li>没有把Memory设置成为 “Guaranteed QoS”<br>Memory不像CPU，CPU不够的时候会成为瓶颈，而Memory不够的时候会导致OOM错误；如果想尽量保证服务的稳定性，就设置成 “Guaranteed QoS”；</li>
+</ol>
+<p>关于具体值的设置可以通过prometheus这类监控工具查看集群状态和pod的指标来判断。 GCP的<a href="href="https://cloud.google.com/kubernetes-engine/docs/concepts/verticalpodautoscaler"">VerticalPodAutoScaler</a> 也可以帮助自动化这个过程。</p>
+<h2 id="2-Liveness和Readiness探针"><a href="#2-Liveness和Readiness探针" class="headerlink" title="2. Liveness和Readiness探针"></a>2. Liveness和Readiness探针</h2><p><strong>使用建议</strong>: </p>
+<ul>
+<li>除非你有很明确的场景，或者非常了解后果的情况下，<strong>通常建议<a href="https://twitter.com/sszuecs/status/1175803113204269059" target="_blank" rel="noopener">定义且只定义readiness</a>，因为<a href="https://srcco.de/posts/kubernetes-liveness-probes-are-dangerous.html" target="_blank" rel="noopener">liveness prob是有风险的</a></strong>。<ul>
+<li>确保readiness定义了</li>
+<li>确保readiness能真实的反映webserver以及对应端口的可用情况</li>
+<li>readiness包含了数据库初始化和migration</li>
+<li>理解readiness的默认行为：interval: 10s，timeout: 1s，successThreshold: 1， failureThreshold: 3</li>
+<li>使用一个不同的端口如果可能的话；与正常的流量区分开来</li>
+<li>可以使用readiness probe作为prewarming / cache loading, 预热节点</li>
+</ul>
+</li>
+<li>Liveness和Readiness probe 尽量不要依赖于外部的dependencies(例如数据库)，<ul>
+<li>避免导致级联失效;</li>
+<li>低耦合，其他服务的状态由他自己的探针负责;</li>
+</ul>
+</li>
+<li>如果非要设置Liveness，不要使用和Readiness同一个接口</li>
+<li>不要使用 “exec” probes</li>
+</ul>
+<p><strong>常见错误场景</strong>: </p>
+<ul>
+<li>没有配置readiness</li>
+<li>错误的配置readiness探针</li>
+<li>readiness == liveness</li>
+<li>没有优雅的关闭</li>
+<li>优雅的关闭不够优雅</li>
+</ul>
+<p>Liveness和Readiness probe的关系容易混淆。他们都在pod的全生命周期执行</p>
+<ul>
+<li>Liveness在探测失败时候会重启节点；</li>
+<li>Readiness在探针失败时候，会断开pod与k8s service的连接，并且不会把请求往pod上发送，直到再次探测成功；</li>
+</ul>
+<p>如果一个配置了readiness的节点在请求量过大的时候，readiness可能失效，于是该节点暂时不再处理更多的请求；但是当节点负载慢慢降低，<strong>readiness恢复时候，节点又能够正常的处理请求</strong>。<br>但是如果该节点配置了相同的liveness 探针并且也失效了，那么该节点就会重启。<strong>为什么你需要重启一个健康的、并且正在处理很多请求的节点呢？</strong></p>
+<h2 id="3-为每个http服务都设置负载均衡"><a href="#3-为每个http服务都设置负载均衡" class="headerlink" title="3. 为每个http服务都设置负载均衡"></a>3. 为每个http服务都设置负载均衡</h2><p><strong>使用建议</strong>:<br>如果需要对外暴露接口的时候，最好使用ingress；或者使用”type: NodePort” 类型的service。</p>
+<p>不要把每个Service设置成”type: LoadBalancer” 类型，该类型会调用云提供商的接口创建额外的资源，通常包括IP以及一些额外的计算资源；如果所有Service都是用该类型通常会有很多额外的花费</p>
+<h2 id="4-使用非Kubernetes感知的集群自动扩展"><a href="#4-使用非Kubernetes感知的集群自动扩展" class="headerlink" title="4. 使用非Kubernetes感知的集群自动扩展"></a>4. 使用非Kubernetes感知的集群自动扩展</h2><p><strong>使用建议</strong>:<br>使用auto scaler的时候，使用官方或社区推荐的auto scaler</p>
+<p>当在集群里面添加/删除node的时候，你不应该只考虑CPU/Memory的限制这些指标，还要考虑<strong>k8s中一些调度的约束，比如：pod &amp; node affinities，taints &amp; tolerations, resource request, QoS等</strong>。Scaling-in 也就是移除节点的过程会更加的复杂，例如stateful的pod与pv有绑定，而pv通常又属于某个特定的zone的时候。</p>
+<p><strong>在使用auto-scaler 时候，auto scaler也需要理解这些配置，否则会导致pod调度失败</strong>。目前社区通常使用<a href="https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler" target="_blank" rel="noopener">cluster-autoscaler</a> 来做集群的自动扩容缩容。</p>
+<h2 id="5-未定义pod的反亲和性"><a href="#5-未定义pod的反亲和性" class="headerlink" title="5. 未定义pod的反亲和性"></a>5. 未定义pod的反亲和性</h2><p><strong>使用建议</strong>:<br>明确的声明反亲和性，确保pod会调度到不同的node上:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; omitted for brevity</span><br><span class="line">      labels:</span><br><span class="line">        app: zk</span><br><span class="line">&#x2F;&#x2F; omitted for brevity</span><br><span class="line">      affinity:</span><br><span class="line">        podAntiAffinity:</span><br><span class="line">          requiredDuringSchedulingIgnoredDuringExecution:</span><br><span class="line">            - labelSelector:</span><br><span class="line">                matchExpressions:</span><br><span class="line">                  - key: &quot;app&quot;</span><br><span class="line">                    operator: In</span><br><span class="line">                    values:</span><br><span class="line">                    - zk</span><br><span class="line">              topologyKey: &quot;kubernetes.io&#x2F;hostname&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>因为只是调度时候需要检查，因此<code>requiredDuringSchedulingIgnoredDuringExecution</code>。</li>
+<li>以上配置会根据<code>&quot;kubernetes.io/hostname&quot;</code>来适用反亲和性，如果有更定制化的HA需求，比如多区域部署，可以go deeper。</li>
+</ul>
+<p><strong>常见错误场景：</strong><br>如果一个deployment为了高可用声明了三个pod，但是这三个pod被调度到一个node上了，那么当这个node 挂掉的时候，这个deployment所有的服务都不可用了。</p>
+<h2 id="6-没有使用PodDisruptionBudget"><a href="#6-没有使用PodDisruptionBudget" class="headerlink" title="6. 没有使用PodDisruptionBudget"></a>6. 没有使用PodDisruptionBudget</h2><p><strong>使用建议：</strong><br>对于有HA需求的pod， 设置<a href="https://blog.marekbartik.com/posts/2018-06-29_kubernetes-in-production-poddisruptionbudget/" target="_blank" rel="noopener">PodDisruptionBudget</a>。<br>PodDisruptionBudget 控制器来保证在主动销毁应用POD的时候，不会一次性销毁太多的应用pod，从而保证业务不中断或业务SLA不降级。<br>Cluster Managers 或者host provider 应当使用能识别 PodDisruptionBudget 的<a href="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#the-eviction-api" target="_blank" rel="noopener">eviction API</a> 而不是直接删除 pod, 例如<code>kubectl drain</code> 命令。当要drain一个node的时候， <code>kubectl drain</code> 会尝试不停的evict对应机器上所有的pods, 请求也许会被temporarily的失败，但是会不停的重试直到所有的pod都Terminated，或者达到了配置的timeout时间。<br>更多的<a href="https://blog.marekbartik.com/posts/2018-06-29_kubernetes-in-production-poddisruptionbudget/" target="_blank" rel="noopener">细节介绍</a>。</p>
+<p>1、下面的例子使用了minAvailable参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: policy&#x2F;v1beta1  </span><br><span class="line">kind: PodDisruptionBudget  </span><br><span class="line">metadata:  </span><br><span class="line">  name: zk-pdb  </span><br><span class="line">spec:  </span><br><span class="line">  minAvailable: 2  </span><br><span class="line">  selector:  </span><br><span class="line">    matchLabels:  </span><br><span class="line">      app: zookeeper</span><br></pre></td></tr></table></figure>
+<p>2、下面的例子使用了maxUnavailable参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: policy&#x2F;v1beta1  </span><br><span class="line">kind: PodDisruptionBudget  </span><br><span class="line">metadata:  </span><br><span class="line">  name: zk-pdb  </span><br><span class="line">spec:  </span><br><span class="line">  maxUnavailable: 1  </span><br><span class="line">  selector:  </span><br><span class="line">    matchLabels:  </span><br><span class="line">      app: zookeeper</span><br></pre></td></tr></table></figure>
+<p>当zk-pdb对象副本数是3的时候，上面这两个例子所表达的意思是一样的。</p>
+<h2 id="7-多租户或多环境共享集群"><a href="#7-多租户或多环境共享集群" class="headerlink" title="7. 多租户或多环境共享集群"></a>7. 多租户或多环境共享集群</h2><p><strong>使用建议：</strong><br>k8s的namespace并不提供很强的隔离性，因此尽量不要使用namespace来做多环境多租户的隔离，例如不要把dev，qa，staging，sandbox这些环境和prod部署到一个集群里面。<br>尽管有一些资源公平性的配置，如: resource requests/limits, quotas, priorityClasses; 以及一些隔离性的配置，如: affinities，tolerations, taints；但是为了达到隔离，通常需要极为复杂的配置。<br>因此大部分时候，使用多个集群会更加的易于维护。</p>
+<h2 id="8-使用latest标签"><a href="#8-使用latest标签" class="headerlink" title="8. 使用latest标签"></a>8. 使用latest标签</h2><p><strong>使用建议：</strong><br>不要在deployment中的镜像使用<code>:latest</code>标签，而是使用固定的版本。<br>否则可能会导致部署时候，k8s node使用本地的旧版本的image, 导致线上环境出现版本问题。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Huan Ruan
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://rhuanhuan.github.io/common-errors-with-k8s/" title="common errors with k8s">https://rhuanhuan.github.io/common-errors-with-k8s/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/k8s/" rel="tag"># k8s</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/understand-https/" rel="prev" title="浅析HTTPs的流程和逻辑">
+      <i class="fa fa-chevron-left"></i> 浅析HTTPs的流程和逻辑
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-资源（resources）——requests和limits"><span class="nav-number">1.</span> <span class="nav-text">1. 资源（resources）——requests和limits</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Liveness和Readiness探针"><span class="nav-number">2.</span> <span class="nav-text">2. Liveness和Readiness探针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-为每个http服务都设置负载均衡"><span class="nav-number">3.</span> <span class="nav-text">3. 为每个http服务都设置负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-使用非Kubernetes感知的集群自动扩展"><span class="nav-number">4.</span> <span class="nav-text">4. 使用非Kubernetes感知的集群自动扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-未定义pod的反亲和性"><span class="nav-number">5.</span> <span class="nav-text">5. 未定义pod的反亲和性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-没有使用PodDisruptionBudget"><span class="nav-number">6.</span> <span class="nav-text">6. 没有使用PodDisruptionBudget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-多租户或多环境共享集群"><span class="nav-number">7.</span> <span class="nav-text">7. 多租户或多环境共享集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-使用latest标签"><span class="nav-number">8.</span> <span class="nav-text">8. 使用latest标签</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Huan Ruan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/rhuanhuan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;rhuanhuan" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/u/75a10b850a07" title="简书 → https:&#x2F;&#x2F;www.jianshu.com&#x2F;u&#x2F;75a10b850a07" rel="noopener" target="_blank"><i class="fa fa-fw fa-简书"></i>简书</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Huan Ruan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'e6920ad48d3ec034ecd4',
+      clientSecret: 'e169d9e5b1c3fc62293a4a2481544c1f99f5205b',
+      repo        : 'blogComment',
+      owner       : 'rhuanhuan',
+      admin       : ['rhuanhuan'],
+      id          : '83e73bc133c9fcda76fe36259b346480',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -180,6 +180,168 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/common-errors-with-k8s/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/common-errors-with-k8s/" class="post-title-link" itemprop="url">common errors with k8s</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-08-09 16:34:17 / Modified: 16:35:40" itemprop="dateCreated datePublished" datetime="2020-08-09T16:34:17+08:00">2020-08-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Cloud-Native/" itemprop="url" rel="index"><span itemprop="name">Cloud Native</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Cloud-Native/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>参考文章: </p>
+<ul>
+<li><a href="https://blog.pipetail.io/posts/2020-05-04-most-common-mistakes-k8s/" target="_blank" rel="noopener">10 most common mistakes using kubernetes</a></li>
+<li><a href="https://k8s.af/" target="_blank" rel="noopener">Kubernetes Failure Stories</a></li>
+<li><a href="https://blog.marekbartik.com/posts/2018-06-29_kubernetes-in-production-poddisruptionbudget/" target="_blank" rel="noopener">Kubernetes in production — PodDisruptionBudget</a></li>
+</ul>
+<p>主要参考了网上的一些文章和自己日常使用的一些小结，以下是一些我们经常看到的错误：</p>
+<ol>
+<li>资源（resources）——requests和limits配置不合理</li>
+<li>Liveness和Readiness探针配置不合理</li>
+<li>为每个http服务都设置负载均衡</li>
+<li>使用非Kubernetes感知的集群自动扩展</li>
+<li>未定义pod的反亲和性</li>
+<li>没有使用PodDisruptionBudget</li>
+<li>多租户或多环境共享集群</li>
+<li>使用latest标签</li>
+</ol>
+<h2 id="1-资源（resources）——requests和limits"><a href="#1-资源（resources）——requests和limits" class="headerlink" title="1. 资源（resources）——requests和limits"></a>1. 资源（resources）——requests和limits</h2><p>这个绝对是最值得注意以及最先拿出来讲解的。  </p>
+<p><strong>使用建议</strong>: </p>
+<ol>
+<li>CPU通常只建议设置一个较为合理的 <code>request</code>，而无需设置<code>limit</code>；</li>
+<li>Memory通常建议设置成为 <code>Guaranteed QoS</code>，即<code>request</code> == <code>limit</code>；</li>
+</ol>
+<p><strong>常见的错误场景及可能导致的结果</strong><br><strong>关于CPU的有:</strong></p>
+<ol>
+<li><strong>不设置</strong> CPU request; （会导致资源抢占，驱逐pod，乃至集群雪崩）</li>
+<li>将CPU请求<strong>设置得很低</strong>;（这样我们就可以在每个节点上容纳很多Pod。但是当pod负载过高时，pod仅能获取他所请求的那部分资源，会导致资源的限制成为瓶颈）</li>
+<li>给CPU <strong>设置limit</strong> ;  (在CPU负载高的时候，workload的CPU limit成为瓶颈，导致延迟、超时等问题；关于CPU的limit有一些围绕CPU CFS和CPU limit的讨论，但是通常认为设置CPU limit会引发更多的问题)</li>
+</ol>
+<p><strong>关于Memory的有:</strong></p>
+<ol>
+<li>没有把Memory设置成为 “Guaranteed QoS”<br>Memory不像CPU，CPU不够的时候会成为瓶颈，而Memory不够的时候会导致OOM错误；如果想尽量保证服务的稳定性，就设置成 “Guaranteed QoS”；</li>
+</ol>
+<p>关于具体值的设置可以通过prometheus这类监控工具查看集群状态和pod的指标来判断。 GCP的<a href="href="https://cloud.google.com/kubernetes-engine/docs/concepts/verticalpodautoscaler"">VerticalPodAutoScaler</a> 也可以帮助自动化这个过程。</p>
+<h2 id="2-Liveness和Readiness探针"><a href="#2-Liveness和Readiness探针" class="headerlink" title="2. Liveness和Readiness探针"></a>2. Liveness和Readiness探针</h2><p><strong>使用建议</strong>: </p>
+<ul>
+<li>除非你有很明确的场景，或者非常了解后果的情况下，<strong>通常建议<a href="https://twitter.com/sszuecs/status/1175803113204269059" target="_blank" rel="noopener">定义且只定义readiness</a>，因为<a href="https://srcco.de/posts/kubernetes-liveness-probes-are-dangerous.html" target="_blank" rel="noopener">liveness prob是有风险的</a></strong>。<ul>
+<li>确保readiness定义了</li>
+<li>确保readiness能真实的反映webserver以及对应端口的可用情况</li>
+<li>readiness包含了数据库初始化和migration</li>
+<li>理解readiness的默认行为：interval: 10s，timeout: 1s，successThreshold: 1， failureThreshold: 3</li>
+<li>使用一个不同的端口如果可能的话；与正常的流量区分开来</li>
+<li>可以使用readiness probe作为prewarming / cache loading, 预热节点</li>
+</ul>
+</li>
+<li>Liveness和Readiness probe 尽量不要依赖于外部的dependencies(例如数据库)，<ul>
+<li>避免导致级联失效;</li>
+<li>低耦合，其他服务的状态由他自己的探针负责;</li>
+</ul>
+</li>
+<li>如果非要设置Liveness，不要使用和Readiness同一个接口</li>
+<li>不要使用 “exec” probes</li>
+</ul>
+<p><strong>常见错误场景</strong>: </p>
+<ul>
+<li>没有配置readiness</li>
+<li>错误的配置readiness探针</li>
+<li>readiness == liveness</li>
+<li>没有优雅的关闭</li>
+<li>优雅的关闭不够优雅</li>
+</ul>
+<p>Liveness和Readiness probe的关系容易混淆。他们都在pod的全生命周期执行</p>
+<ul>
+<li>Liveness在探测失败时候会重启节点；</li>
+<li>Readiness在探针失败时候，会断开pod与k8s service的连接，并且不会把请求往pod上发送，直到再次探测成功；</li>
+</ul>
+<p>如果一个配置了readiness的节点在请求量过大的时候，readiness可能失效，于是该节点暂时不再处理更多的请求；但是当节点负载慢慢降低，<strong>readiness恢复时候，节点又能够正常的处理请求</strong>。<br>但是如果该节点配置了相同的liveness 探针并且也失效了，那么该节点就会重启。<strong>为什么你需要重启一个健康的、并且正在处理很多请求的节点呢？</strong></p>
+<h2 id="3-为每个http服务都设置负载均衡"><a href="#3-为每个http服务都设置负载均衡" class="headerlink" title="3. 为每个http服务都设置负载均衡"></a>3. 为每个http服务都设置负载均衡</h2><p><strong>使用建议</strong>:<br>如果需要对外暴露接口的时候，最好使用ingress；或者使用”type: NodePort” 类型的service。</p>
+<p>不要把每个Service设置成”type: LoadBalancer” 类型，该类型会调用云提供商的接口创建额外的资源，通常包括IP以及一些额外的计算资源；如果所有Service都是用该类型通常会有很多额外的花费</p>
+<h2 id="4-使用非Kubernetes感知的集群自动扩展"><a href="#4-使用非Kubernetes感知的集群自动扩展" class="headerlink" title="4. 使用非Kubernetes感知的集群自动扩展"></a>4. 使用非Kubernetes感知的集群自动扩展</h2><p><strong>使用建议</strong>:<br>使用auto scaler的时候，使用官方或社区推荐的auto scaler</p>
+<p>当在集群里面添加/删除node的时候，你不应该只考虑CPU/Memory的限制这些指标，还要考虑<strong>k8s中一些调度的约束，比如：pod &amp; node affinities，taints &amp; tolerations, resource request, QoS等</strong>。Scaling-in 也就是移除节点的过程会更加的复杂，例如stateful的pod与pv有绑定，而pv通常又属于某个特定的zone的时候。</p>
+<p><strong>在使用auto-scaler 时候，auto scaler也需要理解这些配置，否则会导致pod调度失败</strong>。目前社区通常使用<a href="https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler" target="_blank" rel="noopener">cluster-autoscaler</a> 来做集群的自动扩容缩容。</p>
+<h2 id="5-未定义pod的反亲和性"><a href="#5-未定义pod的反亲和性" class="headerlink" title="5. 未定义pod的反亲和性"></a>5. 未定义pod的反亲和性</h2><p><strong>使用建议</strong>:<br>明确的声明反亲和性，确保pod会调度到不同的node上:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; omitted for brevity</span><br><span class="line">      labels:</span><br><span class="line">        app: zk</span><br><span class="line">&#x2F;&#x2F; omitted for brevity</span><br><span class="line">      affinity:</span><br><span class="line">        podAntiAffinity:</span><br><span class="line">          requiredDuringSchedulingIgnoredDuringExecution:</span><br><span class="line">            - labelSelector:</span><br><span class="line">                matchExpressions:</span><br><span class="line">                  - key: &quot;app&quot;</span><br><span class="line">                    operator: In</span><br><span class="line">                    values:</span><br><span class="line">                    - zk</span><br><span class="line">              topologyKey: &quot;kubernetes.io&#x2F;hostname&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>因为只是调度时候需要检查，因此<code>requiredDuringSchedulingIgnoredDuringExecution</code>。</li>
+<li>以上配置会根据<code>&quot;kubernetes.io/hostname&quot;</code>来适用反亲和性，如果有更定制化的HA需求，比如多区域部署，可以go deeper。</li>
+</ul>
+<p><strong>常见错误场景：</strong><br>如果一个deployment为了高可用声明了三个pod，但是这三个pod被调度到一个node上了，那么当这个node 挂掉的时候，这个deployment所有的服务都不可用了。</p>
+<h2 id="6-没有使用PodDisruptionBudget"><a href="#6-没有使用PodDisruptionBudget" class="headerlink" title="6. 没有使用PodDisruptionBudget"></a>6. 没有使用PodDisruptionBudget</h2><p><strong>使用建议：</strong><br>对于有HA需求的pod， 设置<a href="https://blog.marekbartik.com/posts/2018-06-29_kubernetes-in-production-poddisruptionbudget/" target="_blank" rel="noopener">PodDisruptionBudget</a>。<br>PodDisruptionBudget 控制器来保证在主动销毁应用POD的时候，不会一次性销毁太多的应用pod，从而保证业务不中断或业务SLA不降级。<br>Cluster Managers 或者host provider 应当使用能识别 PodDisruptionBudget 的<a href="https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#the-eviction-api" target="_blank" rel="noopener">eviction API</a> 而不是直接删除 pod, 例如<code>kubectl drain</code> 命令。当要drain一个node的时候， <code>kubectl drain</code> 会尝试不停的evict对应机器上所有的pods, 请求也许会被temporarily的失败，但是会不停的重试直到所有的pod都Terminated，或者达到了配置的timeout时间。<br>更多的<a href="https://blog.marekbartik.com/posts/2018-06-29_kubernetes-in-production-poddisruptionbudget/" target="_blank" rel="noopener">细节介绍</a>。</p>
+<p>1、下面的例子使用了minAvailable参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: policy&#x2F;v1beta1  </span><br><span class="line">kind: PodDisruptionBudget  </span><br><span class="line">metadata:  </span><br><span class="line">  name: zk-pdb  </span><br><span class="line">spec:  </span><br><span class="line">  minAvailable: 2  </span><br><span class="line">  selector:  </span><br><span class="line">    matchLabels:  </span><br><span class="line">      app: zookeeper</span><br></pre></td></tr></table></figure>
+<p>2、下面的例子使用了maxUnavailable参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: policy&#x2F;v1beta1  </span><br><span class="line">kind: PodDisruptionBudget  </span><br><span class="line">metadata:  </span><br><span class="line">  name: zk-pdb  </span><br><span class="line">spec:  </span><br><span class="line">  maxUnavailable: 1  </span><br><span class="line">  selector:  </span><br><span class="line">    matchLabels:  </span><br><span class="line">      app: zookeeper</span><br></pre></td></tr></table></figure>
+<p>当zk-pdb对象副本数是3的时候，上面这两个例子所表达的意思是一样的。</p>
+<h2 id="7-多租户或多环境共享集群"><a href="#7-多租户或多环境共享集群" class="headerlink" title="7. 多租户或多环境共享集群"></a>7. 多租户或多环境共享集群</h2><p><strong>使用建议：</strong><br>k8s的namespace并不提供很强的隔离性，因此尽量不要使用namespace来做多环境多租户的隔离，例如不要把dev，qa，staging，sandbox这些环境和prod部署到一个集群里面。<br>尽管有一些资源公平性的配置，如: resource requests/limits, quotas, priorityClasses; 以及一些隔离性的配置，如: affinities，tolerations, taints；但是为了达到隔离，通常需要极为复杂的配置。<br>因此大部分时候，使用多个集群会更加的易于维护。</p>
+<h2 id="8-使用latest标签"><a href="#8-使用latest标签" class="headerlink" title="8. 使用latest标签"></a>8. 使用latest标签</h2><p><strong>使用建议：</strong><br>不要在deployment中的镜像使用<code>:latest</code>标签，而是使用固定的版本。<br>否则可能会导致部署时候，k8s node使用本地的旧版本的image, 导致线上环境出现版本问题。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/understand-https/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1024,103 +1186,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/mysql-transaction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Huan Ruan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Huan Space">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/mysql-transaction/" class="post-title-link" itemprop="url">MySQL的InnoDB如何实现事务性</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-04-01 21:47:53" itemprop="dateCreated datePublished" datetime="2020-04-01T21:47:53+08:00">2020-04-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-16 00:14:32" itemprop="dateModified" datetime="2020-05-16T00:14:32+08:00">2020-05-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>事务是一个序列操作，其中的操作要么都执行，要么都不执行，它是一个不可分割的工作单位；数据库事务的 ACID 四大特性是事务的基础，了解了 ACID 是如何实现的，我们也就清楚了事务的实现。</p>
-<h2 id="MySQL-如何保证事务性"><a href="#MySQL-如何保证事务性" class="headerlink" title="MySQL 如何保证事务性?"></a>MySQL 如何保证事务性?</h2><p>MySQL事务在哪实现的？</p>
-<ul>
-<li>MySQL中服务器层不管理事务，事务是由存储引擎实现的。</li>
-<li>MySQL支持事务的存储引擎有InnoDB、NDB Cluster等，其中InnoDB的使用最为广泛；其他存储引擎不支持事务，如MyIsam、Memory等。</li>
-</ul>
-<p>MySQL事务如何实现的？</p>
-<ul>
-<li>redo log重做日志用来保证事务的持久性</li>
-<li>undo log回滚日志保证事务的原子性</li>
-<li>undo log+redo log保证事务的一致性</li>
-<li>锁（共享、排他）用来保证事务的隔离性</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/mysql-transaction/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1191,14 +1256,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">

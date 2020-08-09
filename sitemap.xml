@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://rhuanhuan.github.io/common-errors-with-k8s/</loc>
+    
+    <lastmod>2020-08-09T08:35:40.811Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://rhuanhuan.github.io/my-github-blog-start/</loc>
+    
+    <lastmod>2020-05-22T07:49:26.581Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://rhuanhuan.github.io/event-storming-summary/</loc>
     
     <lastmod>2020-05-17T11:44:33.822Z</lastmod>
