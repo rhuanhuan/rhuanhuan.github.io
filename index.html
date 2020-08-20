@@ -180,6 +180,183 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/jsr-133-review/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/jsr-133-review/" class="post-title-link" itemprop="url">jsr-133 review</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-08-20 22:01:21 / Modified: 22:02:07" itemprop="dateCreated datePublished" datetime="2020-08-20T22:01:21+08:00">2020-08-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/effective-java-developer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Huan Ruan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Huan Space">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/effective-java-developer/" class="post-title-link" itemprop="url">阿里的一些Java编程规范解读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-11 12:03:34" itemprop="dateCreated datePublished" datetime="2020-08-11T12:03:34+08:00">2020-08-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-20 21:59:18" itemprop="dateModified" datetime="2020-08-20T21:59:18+08:00">2020-08-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Technical/Java/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>参考文章：</p>
+<ol>
+<li><a href="https://developer.aliyun.com/article/769906" target="_blank" rel="noopener">阿里 《Java开发手册解读》</a></li>
+</ol>
+<p>tips:</p>
+<ol>
+<li>禁止使用Apache BeanUtils 进行属性copy。 =&gt; 性能问题；</li>
+<li>日期格式化年份使用y, 不能使用Y。 =&gt; 国际标准问题，边界情况Y会导致年份错误；</li>
+<li>三目运算符注意自动拆箱导致的空指针问题。 =&gt; 基本类型的引用类型自动拆箱的问题，会导致抛出NPE；</li>
+<li>建议设置初始化HashMap的大小，值为 <code>期望大小/扩展因子(默认0.75) + 1</code>。 =&gt; HashMap重建hash树性能损耗；</li>
+<li>禁止使用Executors创建线程池。 =&gt; 默认的都可能会导致OOM问题；</li>
+<li>谨慎使用ArrayList 中的 sublist方法 =&gt; 返回结果是ArrayList 类型的内部类，是它的一个视图，不是一个新的List，因此使用不方便容易出错；</li>
+<li>不建议在for 循环中使用 “+” 进行字符串拼接 =&gt; “+” 反编译会变成”StringBuilder”，线程不安全；</li>
+<li>禁止在forEach循环中使用add/remove操作 =&gt; 可能会报错。forEach语法糖反编译，其实使用了iterator; add/remove是list的方法, list会报并发修改错误；</li>
+<li>禁止工程师直接使用日志系统(Log4j、Log back) 中的API =&gt; 外观设计模式，使用日志门面，主要一套通用的API，用来屏蔽各个日志框架之间的差异。例如应用中使用如Log4j + SLF4J 这样的组合来进行日志输出；</li>
+<li>禁止把SimpleDateFormat定义成static变量； =&gt; 线程不安全；</li>
+<li>禁止开发人员使用isSuccess作为变量名； =&gt; Java Bean Specification规范，一般的属性用get/set, 布尔值属性用is/set, 因此is<Boollean> 会造成一些框架解析出错；</li>
+<li>禁止开发人员修改serialVersionUID字段的值；=&gt; 会造成反序列化出错；</li>
+<li>建议开发者谨慎使用继承； =&gt; 扩展问题，接口优于继承；</li>
+<li>禁止使用count(列名) 或count(常量) 来替代count(*)；=&gt; 性能问题，差距很大；</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/common-errors-with-k8s/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -964,224 +1141,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/java-zgc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Huan Ruan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Huan Space">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/java-zgc/" class="post-title-link" itemprop="url">Java gc综述（包括ZGC）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-04-03 23:21:16" itemprop="dateCreated datePublished" datetime="2020-04-03T23:21:16+08:00">2020-04-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-16 00:11:09" itemprop="dateModified" datetime="2020-05-16T00:11:09+08:00">2020-05-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本文主要介绍JVM GC中的各种算法和逻辑。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/java-zgc/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://rhuanhuan.github.io/spring-transaction-annotation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Huan Ruan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Huan Space">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/spring-transaction-annotation/" class="post-title-link" itemprop="url">spring @Transactional 原理及使用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-04-02 21:42:18" itemprop="dateCreated datePublished" datetime="2020-04-02T21:42:18+08:00">2020-04-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-16 00:54:52" itemprop="dateModified" datetime="2020-05-16T00:54:52+08:00">2020-05-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/" itemprop="url" rel="index"><span itemprop="name">Technical</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Technical/Java/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Spring服务端开发中经常用到@Transactional, 之前也有文章介绍过<a href="https://rhuanhuan.github.io/mysql-transaction/">MySQL的事务性</a>, 这里再扒一下Spring中的@Transactional注解如何保证事务性。</p>
-<h3 id="Transactional-注解的属性信息"><a href="#Transactional-注解的属性信息" class="headerlink" title="@Transactional 注解的属性信息"></a>@Transactional 注解的属性信息</h3><table>
-<thead>
-<tr>
-<th align="left">属性名</th>
-<th align="left">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">readOnly</td>
-<td align="left">该属性用于设置当前事务是否为只读事务，设置为true表示只读，false则表示可读写，默认值为false。例如：<code>@Transactional(readOnly=true)</code></td>
-</tr>
-<tr>
-<td align="left">name</td>
-<td align="left">当在配置文件中有多个 TransactionManager , 可以用该属性指定选择哪个事务管理器。</td>
-</tr>
-<tr>
-<td align="left">propagation</td>
-<td align="left">事务的传播行为，默认值为 REQUIRED。</td>
-</tr>
-<tr>
-<td align="left">isolation</td>
-<td align="left">事务的隔离级别，默认值采用 DEFAULT，即底层数据库的隔离级别。</td>
-</tr>
-<tr>
-<td align="left">timeout</td>
-<td align="left">事务的超时时间，默认值为-1表示永不超时。如果超过该时间限制但事务还没有完成，则自动回滚事务。</td>
-</tr>
-<tr>
-<td align="left">read-only</td>
-<td align="left">指定事务是否为只读事务，默认值为 false；为了忽略那些不需要事务的方法，比如读取数据，可以设置 read-only 为 true。</td>
-</tr>
-<tr>
-<td align="left">rollback-for</td>
-<td align="left">用于指定能够触发事务回滚的异常类型，如果有多个异常类型需要指定，各类型之间可以通过逗号分隔。<br> <code>@Transactional(rollbackFor={RuntimeException.class, Exception.class})</code></td>
-</tr>
-<tr>
-<td align="left">no-rollback-for</td>
-<td align="left">抛出 no-rollback-for 指定的异常类型，不回滚事务。<br> <code>@Transactional(noRollbackFor={RuntimeException.class, Exception.class})</code></td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/spring-transaction-annotation/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1252,7 +1211,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1265,7 +1224,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
